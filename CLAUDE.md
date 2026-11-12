@@ -11,6 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm start` — run the server (`node server.js`), default http://localhost:3000 (binds to 127.0.0.1 only)
 - `npm run dev` — same with `node --watch` auto-restart
 - Requires Node >= 18 (uses global `fetch`). There is no `npm install` step, no build, no linter and no test suite.
+- `docker build -t sacada . && docker run -p 3000:3000 -v sacada-data:/app/data -e MASTER_PASSWORD=... sacada` — the image sets `HOST=0.0.0.0`, runs as `node`, and declares `/app/data` as a volume. The Dockerfile copies only `package.json`, `server.js`, `public/` and `seed/`, so new top-level files need a `COPY` line.
+- `data/resultados.json`, `data/.auth-secret` and `.env` are gitignored. `data/textos.json` is still tracked.
 
 Config comes from `.env` (see `.env.example`): `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `google/gemini-2.5-flash`), `QUIZ_PERGUNTAS` (clamped 5–15), `PORT`, `HOST` (default `127.0.0.1`; `0.0.0.0` in containers), `MASTER_PASSWORD`, plus undocumented `OPENROUTER_BASE_URL`. `server.js` has its own tiny `.env` parser; real environment variables take precedence. Without an API key the app still works with existing texts; only AI generation is disabled. Restart after editing `.env` (`--watch` does not watch it).
 

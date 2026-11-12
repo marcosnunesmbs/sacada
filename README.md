@@ -12,6 +12,16 @@ usa a OpenRouter para escrever textos inéditos e montar os questionários.
 
 Sem a chave, tudo funciona com os textos já cadastrados; só a geração por IA fica desativada.
 
+## Docker / Coolify
+
+```bash
+docker build -t sacada .
+docker run -d -p 3000:3000 -v sacada-data:/app/data \
+  -e MASTER_PASSWORD=sua-senha -e OPENROUTER_API_KEY=sk-or-... sacada
+```
+
+A imagem já define `HOST=0.0.0.0` e `PORT=3000`. Textos, resultados e o segredo do login ficam no volume `/app/data`. No Coolify, escolha o build pack **Dockerfile**, configure a porta 3000 e crie um volume persistente com destino `/app/data`.
+
 ## Variáveis de ambiente (`.env`)
 
 | Variável | Padrão | Uso |
