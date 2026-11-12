@@ -171,6 +171,18 @@ textarea{width:100%;min-height:240px;font-family:var(--read);font-size:17px;line
 #la-body{min-height:150px}
 .acts{flex-wrap:nowrap;gap:6px}
 
+/* histórico: evolução por exercício */
+.hs-sub{margin-top:24px}
+.evo{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0 32px}
+.evo .panel{display:flex;flex-direction:column;gap:4px;min-width:0}
+.evo-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.evo-h small,.evo small,.evo p{color:var(--muted);font-size:12.5px}
+.evo .big{font-size:26px;font-weight:600}
+.evo .spark{width:100%;height:44px;margin:6px 0 2px;display:block}
+.evo .delta{font-weight:600}
+.evo .delta.up{color:var(--good)} .evo .delta.down{color:var(--bad)}
+.hs-head{justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+
 /* login */
 body.locked .wrap{display:none}
 body:not(.locked) #login{display:none}
@@ -454,6 +466,11 @@ body:not(.locked) #login{display:none}
 <section class="view" id="v-historico" hidden>
   <h1>Histórico</h1>
   <p class="lead">Os resultados ficam no arquivo <span class="mono">data/resultados.json</span>, dentro da pasta do projeto.</p>
+  <h2 class="hs-sub">Evolução</h2>
+  <p class="lead">Cada cartão compara a média das suas últimas sessões com a das primeiras, sempre na mesma configuração da sessão mais recente. No gráfico, subir significa melhorar.</p>
+  <div class="evo" id="hs-evo"></div>
+  <div class="row hs-head"><h2>Sessões</h2>
+    <label class="ctl">Exercício<select id="hs-filter"><option value="">Todos</option></select></label></div>
   <div class="tablewrap"><table id="hs-table"></table></div>
   <div class="row"><button class="btn danger" id="hs-clear">Apagar histórico</button>
     <span id="hs-confirm" class="row" hidden>Apagar todos os resultados? <button class="btn danger" id="hs-yes">Sim, apagar</button><button class="btn" id="hs-no">Cancelar</button></span></div>
@@ -730,9 +747,35 @@ function summary(r){switch(r.ex){
   case 'flash':return r.mode+' · '+r.hits+'/10 · '+r.dur+' ms';
   case 'periferia':return r.hits+'/12 · alcance '+r.maxD+'%';
   case 'busca':return r.n+' alvos em '+sec(r.time)+' · '+r.errs+' erro(s)'}return ''}
-function renderHist(){const rows=results.slice(-80).reverse();
-  $('#hs-table').innerHTML='<tr><th>Data</th><th>Exercício</th><th>Resultado</th></tr>'+(rows.length?rows.map(r=>'<tr><td class="mono">'+new Date(r.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+EXN[r.ex]+'</td><td>'+summary(r)+'</td></tr>').join(''):'<tr><td colspan="3">Nenhum resultado ainda. Cada exercício concluído entra aqui.</td></tr>');
-  $('#hs-confirm').hidden=true;$('#hs-clear').hidden=!rows.length}
+/* evolução: métrica principal de cada exercício com fim definido.
+   group = configuração que muda a dificuldade; só sessões iguais à mais recente entram na comparação. */
+const FLM={digitos:'Dígitos',palavras:'Palavras',frases:'Frases'};
+const EVO=[
+  {ex:'schulte',val:r=>r.time,show:sec,low:true,what:'tempo para completar a tabela',group:r=>r.n+' × '+r.n},
+  {ex:'flash',val:r=>r.best,show:v=>'nível '+v,low:false,what:'nível máximo com acerto',group:r=>(FLM[r.mode]||r.mode)+' · '+r.dur+' ms'},
+  {ex:'periferia',val:r=>r.maxD,show:v=>v+'%',low:false,what:'maior afastamento com acerto',group:null},
+  {ex:'busca',val:r=>r.n?r.time/r.n:null,show:sec,low:true,what:'tempo médio por alvo',group:null}];
+function spark(v,low){if(v.length<2)return '<svg class="spark" aria-hidden="true"></svg>';
+  const W=200,H=44,mn=Math.min(...v),mx=Math.max(...v),span=mx-mn||1;
+  const pts=v.map((x,i)=>{let k=(x-mn)/span;if(low)k=1-k;return (4+(W-8)*i/(v.length-1)).toFixed(1)+','+(4+(H-8)*(1-k)).toFixed(1)});
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+pts.join(' ')+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>'}
+function renderEvo(){$('#hs-evo').innerHTML=EVO.map(e=>{
+  let rs=results.filter(r=>r.ex===e.ex&&Number.isFinite(e.val(r)));
+  const head=g=>'<div class="evo-h"><h3><a href="#'+e.ex+'">'+EXN[e.ex]+'</a></h3>'+(g?'<small>'+esc(g)+'</small>':'')+'</div>';
+  if(!rs.length)return '<div class="panel">'+head('')+'<p>Nenhuma sessão concluída ainda.</p></div>';
+  const g=e.group?e.group(rs[rs.length-1]):'';if(e.group)rs=rs.filter(r=>e.group(r)===g);
+  const v=rs.map(e.val),last=v[v.length-1],best=e.low?Math.min(...v):Math.max(...v);
+  let delta='';
+  if(v.length>=2){const k=Math.min(3,Math.floor(v.length/2)),avg=a=>a.reduce((s,x)=>s+x,0)/a.length,a=avg(v.slice(0,k)),b=avg(v.slice(-k));
+    const p=a?(b-a)/a:(b>a?1:0),good=e.low?p<0:p>0;
+    delta=Math.abs(p)<.02?' · <span class="delta">estável</span>':' · <span class="delta '+(good?'up':'down')+'">'+Math.round(Math.abs(p)*100)+'% '+(good?'melhor':'pior')+'</span>'}
+  return '<div class="panel">'+head(g)+'<b class="mono big">'+e.show(last)+'</b><small>'+e.what+' na última sessão</small>'+spark(v.slice(-20),e.low)+
+    '<small>'+v.length+' '+(v.length>1?'sessões':'sessão')+' · melhor '+e.show(best)+delta+'</small></div>'}).join('')}
+$('#hs-filter').innerHTML+=Object.keys(EXN).map(k=>'<option value="'+k+'">'+EXN[k]+'</option>').join('');
+$('#hs-filter').onchange=()=>renderHist();
+function renderHist(){renderEvo();const f=$('#hs-filter').value,rows=results.filter(r=>!f||r.ex===f).slice(-80).reverse();
+  $('#hs-table').innerHTML='<tr><th>Data</th><th>Exercício</th><th>Resultado</th></tr>'+(rows.length?rows.map(r=>'<tr><td class="mono">'+new Date(r.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+EXN[r.ex]+'</td><td>'+summary(r)+'</td></tr>').join(''):'<tr><td colspan="3">'+(f&&results.length?'Nenhuma sessão deste exercício ainda.':'Nenhum resultado ainda. Cada exercício concluído entra aqui.')+'</td></tr>');
+  $('#hs-confirm').hidden=true;$('#hs-clear').hidden=!results.length}
 $('#hs-clear').onclick=()=>{$('#hs-confirm').hidden=false;$('#hs-clear').hidden=true};
 $('#hs-no').onclick=renderHist;$('#hs-yes').onclick=async()=>{try{await api('DELETE','/api/resultados');results=[]}catch(e){}fillSelects();renderHist()};
 

@@ -25,7 +25,7 @@ Two source files:
 
 - `data/textos.json` — text library, copied from `seed/textos.json` on first run if missing. Text shape: `{id, title, body, qs, source: 'manual'|'ia'|seed, meta?, model?, createdAt}`. `body` uses blank lines between paragraphs.
 - Quiz questions are stored in compact form `{q, o: [4 options], a: correctIndex, tipo: 'literal'|'inferencia'}`. The model returns `{pergunta, opcoes, correta, tipo}`; `validQuestions()` validates, converts, and shuffles option order server-side (models tend to repeat the correct position). Each text holds ~`QUIZ_PERGUNTAS` questions; the client samples 5 per test and reshuffles.
-- `data/resultados.json` — append-only array of results posted by the client via `logResult(ex, data)`; `ex` is the exercise name (e.g. `teste` with `{ppm, comp, text}`, `schulte` with `{n, time}`). The dashboard baseline and the "inédito/já testado" marking derive from `ex === 'teste'` entries.
+- `data/resultados.json` — append-only array of results posted by the client via `logResult(ex, data)`; `ex` is the exercise name (e.g. `teste` with `{ppm, comp, text}`, `schulte` with `{n, time}`). The dashboard baseline and the "inédito/já testado" marking derive from `ex === 'teste'` entries. The Histórico "Evolução" cards are driven by the `EVO` table in `index.html`, which sets each exercise's metric, whether lower is better, and the `group` setting that has to match for sessions to be compared. Adding fields to a `logResult` call needs a matching update there and in `summary()`.
 - Writes go through `writeJSON()` (write `.tmp` then rename). Files are re-read on every request; there is no in-memory cache.
 
 ### OpenRouter integration
