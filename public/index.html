@@ -103,7 +103,7 @@ nav i{width:1px;height:16px;background:var(--input);margin:0 6px}
 .bar{height:6px;background:var(--soft);border-radius:999px;overflow:hidden}
 .bar div{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .2s linear}
 
-/* painel */
+/* dashboard */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .stat{padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:4px;min-width:0}
 .stat b{font-family:var(--ui);font-size:28px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
@@ -182,6 +182,12 @@ label.wrong{color:var(--bad);text-decoration:line-through;border-color:color-mix
 /* fundamentos e tabelas */
 .prose{display:flex;flex-direction:column;gap:14px;max-width:68ch}
 .prose h2{margin-top:18px}
+.fund-link{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);color:var(--ink);text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.fund-link:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.fund-link .ic{width:20px;height:20px;color:var(--accent)}
+.fund-link .chev{color:var(--muted)}
+.fund-link span{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.fund-link small{color:var(--muted);font-size:13px}
 .prose ul,.prose ol{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
 .fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow-sm)}
 .fig svg{width:100%;height:auto;display:block}
@@ -201,7 +207,10 @@ textarea{width:100%;height:auto;min-height:240px;padding:10px 12px;font-family:v
   .brand span{display:none}
 }
 @media (prefers-reduced-motion:reduce){ #guia-box{scroll-behavior:auto} .view{animation:none} *{transition:none!important} }
-.brand .btn{margin-left:auto;font-size:13px;height:32px;padding:0 12px}
+.top-acts{display:flex;align-items:center;gap:6px;margin-left:auto}
+.top-acts .btn{font-size:13px;height:32px;padding:0 12px;text-decoration:none}
+.top-acts a.btn[aria-current="page"]{background:var(--soft);border-color:var(--input)}
+#theme{width:32px;padding:0}
 .btn.sm{font-size:13px;height:30px;padding:0 10px}
 .aistat{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);background:var(--soft);padding:4px 12px;border-radius:999px;width:fit-content}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--bad);display:inline-block;box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 20%,transparent)}
@@ -229,6 +238,67 @@ textarea{width:100%;height:auto;min-height:240px;padding:10px 12px;font-family:v
 .evo .delta.up{color:var(--good)} .evo .delta.down{color:var(--bad)}
 .hs-head{justify-content:space-between;align-items:flex-end;margin-bottom:4px}
 
+/* treinos */
+.tr-pick{display:flex;flex-direction:column;gap:20px}
+.tr-mods{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.tr-mod{text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow-sm);
+  cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .15s,box-shadow .15s,transform .1s}
+.tr-mod:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.tr-mod:active{transform:translateY(1px)}
+.tr-mod .n{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.tr-mod b{font-size:16px;letter-spacing:-.01em}
+.tr-mod small{color:var(--muted);font-size:13px}
+.tr-mod .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tr-mod .tags span{background:var(--soft);color:var(--muted);font-size:12px;padding:2px 8px;border-radius:999px}
+.tr-bar{display:flex;flex-direction:column;gap:10px;margin:-12px 0 10px}
+.tr-head,.tr-ctl,.tr-metro,.tr-clock{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tr-head h2{font-size:16px;margin-right:auto}
+.tr-ctl{justify-content:space-between;gap:10px 16px}
+.tr-levels{display:inline-flex;align-items:center;flex-wrap:wrap;gap:2px;padding:3px;background:var(--soft);border-radius:var(--r)}
+.tr-levels>span{font-size:12px;color:var(--muted);padding:0 6px 0 4px}
+.tr-levels button{font-family:var(--mono);font-size:13px;font-weight:500;min-width:28px;height:26px;border:0;border-radius:var(--r-sm);background:transparent;color:var(--muted);cursor:pointer}
+.tr-levels button:hover{color:var(--ink)}
+.tr-levels button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+#tr-bpm-r{width:220px;max-width:38vw;accent-color:var(--primary)}
+.tr-bpm{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.tr-bpm input{width:76px;height:32px;font-family:var(--mono);font-size:15px;text-align:right;color:var(--ink);background:var(--surface);border:1px solid var(--input);border-radius:var(--r);padding:0 8px;box-shadow:var(--shadow-sm)}
+.tr-bpm input:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--ring)}
+.tr-beat{width:12px;height:12px;border-radius:50%;background:var(--soft);border:1px solid var(--input)}
+.tr-beat.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 4px var(--band)}
+#tr-metro.on{border-color:var(--accent);color:var(--accent)}
+.tr-time{font-size:22px;font-weight:600;min-width:6ch;text-align:right;letter-spacing:-.02em}
+#tr-msg{min-height:1.3em;font-size:12.5px}
+.tr-grid{display:grid;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);overflow:hidden;
+  font-family:var(--ui);font-weight:500;line-height:1.5;font-variant-numeric:tabular-nums;font-size:18px}
+.tr-grid span{padding:0 .7em;text-align:left;white-space:nowrap;overflow:hidden;border-right:1px solid var(--line)}
+.tr-grid span.last{border-right:0}
+.tr-grid span.alt{background:color-mix(in srgb,var(--soft) 65%,var(--surface))}
+.ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* modal */
+dialog.modal{padding:0;width:min(640px,calc(100vw - 32px));max-height:calc(100dvh - 32px);border:1px solid var(--line);border-radius:var(--r-lg);
+  background:var(--surface);color:var(--ink);box-shadow:var(--shadow-lg);overflow:hidden;flex-direction:column}
+dialog.modal[open]{display:flex;animation:pop .18s ease-out}
+dialog.modal::backdrop{background:rgba(9,9,11,.5);backdrop-filter:blur(2px)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+.modal-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal-h h2{font-size:18px}
+.modal-x{width:32px;padding:0;box-shadow:none;border-color:transparent}
+.modal-b{padding:18px 20px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;font-size:14.5px;line-height:1.6}
+.modal-b h3{font-size:15px;margin-top:8px}
+.modal-b ol,.modal-b ul{margin:0;padding-left:1.25em;display:flex;flex-direction:column;gap:6px}
+.modal-b li::marker{color:var(--muted)}
+.modal-f{display:flex;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line)}
+.mv{display:grid;grid-template-columns:128px 1fr;gap:16px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:color-mix(in srgb,var(--soft) 50%,var(--surface))}
+.mv svg{width:128px;height:70px;display:block;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm)}
+.mv .w rect{fill:var(--input)}
+.mv .a{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round}
+.mv .j{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:3 3}
+.mv marker path{fill:var(--accent)}
+.mv h4{margin:0 0 4px;font-size:14.5px}
+.mv p{color:var(--muted);font-size:14px}
+@media (max-width:520px){.mv{grid-template-columns:1fr}.mv svg{width:100%;max-width:220px;height:auto}}
+
 /* login */
 body.locked .wrap{display:none}
 body:not(.locked) #login{display:none}
@@ -241,7 +311,6 @@ body:not(.locked) #login{display:none}
 #login input[type=password]{width:100%;height:40px;font-size:15px}
 #login .btn{height:40px;width:100%}
 #login .fb{min-height:1.4em;font-size:13.5px}
-#logout:not([hidden])+#theme{margin-left:0}
 </style>
 </head>
 <body class="locked">
@@ -264,19 +333,21 @@ body:not(.locked) #login{display:none}
   <div class="brand">
     <svg viewBox="0 0 44 18" aria-hidden="true"><path d="M5 14 Q22 -6 39 14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><circle cx="5" cy="14" r="3" fill="var(--ink)"/><circle cx="39" cy="14" r="3" fill="var(--ink)"/></svg>
     <b>Sacada</b><span>treino de leitura rápida, medido em palavras por minuto</span>
-    <button class="btn" id="logout" type="button" hidden>Sair</button>
-    <button class="btn" id="theme" type="button"></button>
+    <div class="top-acts">
+      <a class="btn" id="home" href="#inicio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a>
+      <button class="btn" id="logout" type="button" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+      <button class="btn" id="theme" type="button"></button>
+    </div>
   </div>
   <div class="navscroll"><nav id="nav">
-    <a href="#inicio">Painel</a><a href="#fundamentos">Fundamentos</a><i></i>
-    <a href="#teste">Teste</a><a href="#guia">Guia visual</a><a href="#rsvp">RSVP</a><a href="#schulte">Schulte</a><a href="#flash">Flash</a><a href="#periferia">Periferia</a><a href="#busca">Busca</a><i></i>
+    <a href="#teste">Teste</a><a href="#guia">Guia visual</a><a href="#rsvp">RSVP</a><a href="#schulte">Schulte</a><a href="#flash">Flash</a><a href="#periferia">Periferia</a><a href="#busca">Busca</a><a href="#treino">Treinos</a><i></i>
     <a href="#biblioteca">Biblioteca</a><a href="#historico">Histórico</a>
   </nav></div>
 </header>
 
 <!-- PAINEL -->
 <section class="view" id="v-inicio">
-  <h1>Painel</h1>
+  <h1>Dashboard</h1>
   <div class="stats">
     <div class="stat"><span class="label">Velocidade base</span><b id="st-ppm">–</b><small>ppm no último teste</small></div>
     <div class="stat"><span class="label">Compreensão</span><b id="st-comp">–</b><small>acertos no último teste</small></div>
@@ -296,10 +367,17 @@ body:not(.locked) #login{display:none}
       <p class="note">O número que importa é a velocidade efetiva. Ler a 500 ppm entendendo 40% equivale a 200 ppm.</p>
     </div>
   </div>
+
+  <a class="fund-link" href="#fundamentos">
+    <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>
+    <span><b>Fundamentos</b><small>Como os olhos leem, o que esperar do treino, as três marchas de leitura e o plano de quatro semanas.</small></span>
+    <svg class="ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+  </a>
 </section>
 
 <!-- FUNDAMENTOS -->
 <section class="view" id="v-fundamentos" hidden>
+  <div><a class="btn sm" href="#inicio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Dashboard</a></div>
   <h1>Fundamentos</h1>
   <div class="prose">
     <p>Ler mais rápido é possível, dentro de limites. Esta página resume o que a pesquisa sobre leitura mostra, separa o que funciona do que é promessa de curso, e explica o papel de cada exercício.</p>
@@ -365,7 +443,7 @@ body:not(.locked) #login{display:none}
     </table></div>
 
     <h2>Plano de quatro semanas</h2>
-    <p>Cerca de 15 minutos por dia, cinco ou seis dias por semana. As velocidades são relativas à sua base (o ppm do primeiro teste) e o Painel calcula os valores para você.</p>
+    <p>Cerca de 15 minutos por dia, cinco ou seis dias por semana. As velocidades são relativas à sua base (o ppm do primeiro teste) e o Dashboard calcula os valores para você.</p>
     <div class="tablewrap"><table>
       <tr><th>Semana</th><th>Guia visual</th><th>RSVP</th><th>Foco</th></tr>
       <tr><td>1</td><td class="mono">base +15%</td><td class="mono">base +30%</td><td>Medir a base. Acostumar a seguir o marcador sem voltar. Grupos de 2 palavras.</td></tr>
@@ -480,6 +558,96 @@ body:not(.locked) #login{display:none}
   <div class="result" id="bs-result" hidden></div>
 </section>
 
+<!-- TREINOS -->
+<section class="view" id="v-treino" hidden>
+  <div id="tr-pick" class="tr-pick">
+    <h1>Treinos</h1>
+    <p class="lead">Escolha um módulo. Cada um abre uma tabela de 20 linhas para varrer no ritmo do metrônomo, com níveis que aumentam o tamanho dos itens. Ao encerrar, o tempo, o bpm, o módulo e o nível vão para o histórico.</p>
+    <div><button class="btn" type="button" data-tr-help><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Como treinar</button></div>
+    <div class="tr-mods" id="tr-mods"></div>
+  </div>
+  <div id="tr-run" hidden>
+    <div class="tr-bar">
+      <div class="tr-head">
+        <button class="btn sm" id="tr-back" type="button">← Módulos</button>
+        <h2 id="tr-title"></h2>
+        <div class="tr-levels" id="tr-levels" role="group" aria-label="Nível"></div>
+        <button class="btn sm" id="tr-new" type="button">Nova tabela</button>
+        <button class="btn sm" type="button" data-tr-help aria-label="Como treinar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Como treinar</button>
+      </div>
+      <div class="tr-ctl">
+        <div class="tr-metro">
+          <span class="tr-beat" id="tr-beat" aria-hidden="true"></span>
+          <button class="btn sm" id="tr-minus" type="button" aria-label="Diminuir 10 bpm">−</button>
+          <input type="range" id="tr-bpm-r" min="20" max="1000" step="5" aria-label="Velocidade do metrônomo">
+          <button class="btn sm" id="tr-plus" type="button" aria-label="Aumentar 10 bpm">+</button>
+          <label class="tr-bpm"><input type="number" id="tr-bpm" min="20" max="1000" step="1" inputmode="numeric" aria-label="Batidas por minuto"> bpm</label>
+          <button class="btn" id="tr-metro" type="button">▶ Metrônomo</button>
+        </div>
+        <div class="tr-clock">
+          <span class="tr-time mono" id="tr-time" aria-live="off">0:00.0</span>
+          <button class="btn primary" id="tr-timer" type="button">▶ Iniciar</button>
+          <button class="btn danger" id="tr-end" type="button" disabled>■ Encerrar</button>
+        </div>
+      </div>
+      <p class="note" id="tr-msg"></p>
+    </div>
+    <div class="tr-grid" id="tr-grid"></div>
+  </div>
+</section>
+
+<dialog class="modal" id="tr-help" aria-labelledby="tr-help-t">
+  <form method="dialog" class="modal-h">
+    <h2 id="tr-help-t">Como treinar</h2>
+    <button class="btn sm modal-x" value="close" aria-label="Fechar"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </form>
+  <div class="modal-b">
+    <p>O metrônomo define o ritmo do olhar. Cada bipe corresponde a um movimento: os olhos atravessam um trecho da tabela e, no bipe seguinte, seguem para o próximo. O objetivo não é ler palavra por palavra nem pronunciá-las mentalmente, e sim <strong>reconhecer o que está na linha dentro do tempo de cada bipe</strong>.</p>
+
+    <h3>Passo a passo</h3>
+    <ol>
+      <li>Escolha o nível e ajuste o bpm. Comece num ritmo em que você consegue acompanhar sem se perder.</li>
+      <li>Deixe o olhar no começo da primeira linha e aperte <b>Iniciar</b>. O cronômetro e o metrônomo começam juntos.</li>
+      <li>A cada bipe, faça um dos movimentos abaixo. Ao terminar a 20ª linha, volte ao começo da primeira e continue.</li>
+      <li>Aperte <b>Encerrar</b> para salvar o tempo, o bpm, o módulo e o nível no histórico.</li>
+    </ol>
+
+    <h3>Movimentos</h3>
+    <div class="mv">
+      <svg viewBox="0 0 128 70" aria-hidden="true"><defs><marker id="mv-a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z"/></marker></defs>
+        <g class="w"><rect x="8" y="11" width="24" height="6" rx="3"/><rect x="38" y="11" width="24" height="6" rx="3"/><rect x="68" y="11" width="24" height="6" rx="3"/><rect x="98" y="11" width="22" height="6" rx="3"/><rect x="8" y="32" width="24" height="6" rx="3"/><rect x="38" y="32" width="24" height="6" rx="3"/><rect x="68" y="32" width="24" height="6" rx="3"/><rect x="98" y="32" width="22" height="6" rx="3"/><rect x="8" y="53" width="24" height="6" rx="3"/><rect x="38" y="53" width="24" height="6" rx="3"/><rect x="68" y="53" width="24" height="6" rx="3"/><rect x="98" y="53" width="22" height="6" rx="3"/></g>
+        <path class="j" d="M118 14 L12 35M118 35 L12 56"/><path class="a" marker-end="url(#mv-a1)" d="M8 14 H120"/><path class="a" marker-end="url(#mv-a1)" d="M8 35 H120"/><path class="a" marker-end="url(#mv-a1)" d="M8 56 H120"/></svg>
+      <div><h4>1. Linha a linha</h4>
+        <p>No bipe, passe o olho do início ao fim da linha, num único deslize. No bipe seguinte, volte ao começo e desça para a linha de baixo. É o movimento base: treina a varredura horizontal e o retorno rápido para a linha seguinte.</p></div>
+    </div>
+    <div class="mv">
+      <svg viewBox="0 0 128 70" aria-hidden="true"><defs><marker id="mv-a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z"/></marker></defs>
+        <g class="w"><rect x="8" y="11" width="24" height="6" rx="3"/><rect x="38" y="11" width="24" height="6" rx="3"/><rect x="68" y="11" width="24" height="6" rx="3"/><rect x="98" y="11" width="22" height="6" rx="3"/><rect x="8" y="32" width="24" height="6" rx="3"/><rect x="38" y="32" width="24" height="6" rx="3"/><rect x="68" y="32" width="24" height="6" rx="3"/><rect x="98" y="32" width="22" height="6" rx="3"/><rect x="8" y="53" width="24" height="6" rx="3"/><rect x="38" y="53" width="24" height="6" rx="3"/><rect x="68" y="53" width="24" height="6" rx="3"/><rect x="98" y="53" width="22" height="6" rx="3"/></g>
+        <path class="j" d="M120 14 V35M8 35 V56"/><path class="a" marker-end="url(#mv-a2)" d="M8 14 H120"/><path class="a" marker-end="url(#mv-a2)" d="M120 35 H8"/><path class="a" marker-end="url(#mv-a2)" d="M8 56 H120"/></svg>
+      <div><h4>2. Zigue-zague</h4>
+        <p>Percorra a primeira linha da esquerda para a direita. No bipe seguinte, desça e percorra a linha de baixo da direita para a esquerda, alternando o sentido a cada linha. Sem o retorno ao começo, o olhar não perde tempo voltando e ganha agilidade.</p></div>
+    </div>
+    <div class="mv">
+      <svg viewBox="0 0 128 70" aria-hidden="true"><defs><marker id="mv-a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z"/></marker></defs>
+        <g class="w"><rect x="8" y="7" width="24" height="6" rx="3"/><rect x="38" y="7" width="24" height="6" rx="3"/><rect x="68" y="7" width="24" height="6" rx="3"/><rect x="98" y="7" width="22" height="6" rx="3"/><rect x="8" y="22" width="24" height="6" rx="3"/><rect x="38" y="22" width="24" height="6" rx="3"/><rect x="68" y="22" width="24" height="6" rx="3"/><rect x="98" y="22" width="22" height="6" rx="3"/><rect x="8" y="42" width="24" height="6" rx="3"/><rect x="38" y="42" width="24" height="6" rx="3"/><rect x="68" y="42" width="24" height="6" rx="3"/><rect x="98" y="42" width="22" height="6" rx="3"/><rect x="8" y="57" width="24" height="6" rx="3"/><rect x="38" y="57" width="24" height="6" rx="3"/><rect x="68" y="57" width="24" height="6" rx="3"/><rect x="98" y="57" width="22" height="6" rx="3"/></g>
+        <path class="j" d="M116 25 L14 45"/><path class="a" marker-end="url(#mv-a3)" d="M14 10 L116 25"/><path class="a" marker-end="url(#mv-a3)" d="M14 45 L116 60"/></svg>
+      <div><h4>3. Diagonal em bloco</h4>
+        <p>Fixe o olhar na primeira palavra da primeira linha e, no bipe, deslize em diagonal até a última palavra da linha de baixo, tentando captar todas as palavras desse bloco de duas linhas. No bipe seguinte, comece o próximo bloco. Como cada bipe cobre duas linhas, comece com um bpm mais baixo. Treina a visão periférica: as palavras de cima e de baixo são captadas pelo canto do olho.</p></div>
+    </div>
+
+    <h3>Dicas</h3>
+    <ul>
+      <li>Mexa só os olhos e mantenha a cabeça parada.</li>
+      <li>Perdeu o ritmo? Não volte para recuperar. Retome na linha em que o bipe encontrar você.</li>
+      <li>Alterne os movimentos entre sessões, ou troque de movimento a cada volta completa na tabela.</li>
+      <li>Completou a tabela inteira sem se perder? Suba 10 a 20 bpm ou passe para o próximo nível.</li>
+      <li>Sessões curtas e frequentes rendem mais: de 2 a 5 minutos por módulo.</li>
+      <li>Use <b>Nova tabela</b> para não decorar a posição das palavras.</li>
+    </ul>
+  </div>
+  <form method="dialog" class="modal-f"><button class="btn primary" value="ok">Entendi</button></form>
+</dialog>
+
 <!-- BIBLIOTECA -->
 <section class="view" id="v-biblioteca" hidden>
   <h1>Biblioteca de textos</h1>
@@ -535,7 +703,7 @@ let results=[],pendingTest=null;
 const AUTH={get(){try{return localStorage.getItem('sacada_auth')||''}catch(e){return''}},
             set(t){try{t?localStorage.setItem('sacada_auth',t):localStorage.removeItem('sacada_auth')}catch(e){}}};
 function authHeaders(){const t=AUTH.get();return t?{'Authorization':'Bearer '+t}:{}}
-function logout(msg){AUTH.set('');document.body.classList.add('locked');gdStop();rsStop();scStop();flStop();pfStop();bsStop();
+function logout(msg){AUTH.set('');document.body.classList.add('locked');trLeave();gdStop();rsStop();scStop();flStop();pfStop();bsStop();
   $('#lg-msg').textContent=msg||'';$('#lg-pass').value='';$('#lg-pass').focus()}
 async function checkAuth(){const r=await fetch('/api/auth',{headers:authHeaders()});const d=await r.json();
   $('#logout').hidden=!d.required;return !d.required||d.valid}
@@ -552,7 +720,7 @@ const rand=n=>Math.floor(Math.random()*n);
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 const wordsOf=s=>s.trim().split(/\s+/).filter(Boolean);
 const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
-const EXN={teste:'Teste',guia:'Guia visual',rsvp:'RSVP',schulte:'Schulte',flash:'Flash',periferia:'Periferia',busca:'Busca'};
+const EXN={teste:'Teste',guia:'Guia visual',rsvp:'RSVP',schulte:'Schulte',flash:'Flash',periferia:'Periferia',busca:'Busca',treino:'Treino'};
 
 let TEXTS=[],AI={configured:false,model:""};
 
@@ -567,7 +735,7 @@ function paragraphs(body,box,spans){box.innerHTML='';body.trim().split(/\n\s*\n/
   if(spans){wordsOf(p).forEach(w=>{const s=document.createElement('span');s.textContent=w;el.append(s,' ');spans.push(s)})}else el.textContent=p.replace(/\s+/g,' ');
   box.append(el)})}
 
-/* ---------- plano e painel ---------- */
+/* ---------- plano e dashboard ---------- */
 function baseline(){const t=results.filter(r=>r.ex==='teste');if(!t.length)return null;
   const last=t[t.length-1];const week=Math.min(3,Math.floor((Date.now()-t[0].t)/6048e5));
   const r10=n=>Math.round(n/10)*10;
@@ -795,7 +963,8 @@ function summary(r){switch(r.ex){
   case 'schulte':return r.n+' × '+r.n+' em '+sec(r.time)+' · '+r.errs+' erro(s)';
   case 'flash':return r.mode+' · '+r.hits+'/10 · '+r.dur+' ms';
   case 'periferia':return r.hits+'/12 · alcance '+r.maxD+'%';
-  case 'busca':return r.n+' alvos em '+sec(r.time)+' · '+r.errs+' erro(s)'}return ''}
+  case 'busca':return r.n+' alvos em '+sec(r.time)+' · '+r.errs+' erro(s)';
+  case 'treino':return 'Módulo '+r.mod+' ('+TR_MODS[r.mod-1].name+') · nível '+r.lvl+' · '+clock(r.time*1000)+' · '+r.bpm+' bpm'}return ''}
 /* evolução: métrica principal de cada exercício com fim definido.
    group = configuração que muda a dificuldade; só sessões iguais à mais recente entram na comparação. */
 const FLM={digitos:'Dígitos',palavras:'Palavras',frases:'Frases'};
@@ -803,7 +972,8 @@ const EVO=[
   {ex:'schulte',val:r=>r.time,show:sec,low:true,what:'tempo para completar a tabela',group:r=>r.n+' × '+r.n},
   {ex:'flash',val:r=>r.best,show:v=>'nível '+v,low:false,what:'nível máximo com acerto',group:r=>(FLM[r.mode]||r.mode)+' · '+r.dur+' ms'},
   {ex:'periferia',val:r=>r.maxD,show:v=>v+'%',low:false,what:'maior afastamento com acerto',group:null},
-  {ex:'busca',val:r=>r.n?r.time/r.n:null,show:sec,low:true,what:'tempo médio por alvo',group:null}];
+  {ex:'busca',val:r=>r.n?r.time/r.n:null,show:sec,low:true,what:'tempo médio por alvo',group:null},
+  {ex:'treino',val:r=>r.bpm,show:v=>v+' bpm',low:false,what:'ritmo do metrônomo',group:r=>'Módulo '+r.mod+' · nível '+r.lvl}];
 function spark(v,low){if(v.length<2)return '<svg class="spark" aria-hidden="true"></svg>';
   const W=200,H=44,mn=Math.min(...v),mx=Math.max(...v),span=mx-mn||1;
   const pts=v.map((x,i)=>{let k=(x-mn)/span;if(low)k=1-k;return (4+(W-8)*i/(v.length-1)).toFixed(1)+','+(4+(H-8)*(1-k)).toFixed(1)});
@@ -828,24 +998,150 @@ function renderHist(){renderEvo();const f=$('#hs-filter').value,rows=results.fil
 $('#hs-clear').onclick=()=>{$('#hs-confirm').hidden=false;$('#hs-clear').hidden=true};
 $('#hs-no').onclick=renderHist;$('#hs-yes').onclick=async()=>{try{await api('DELETE','/api/resultados');results=[]}catch(e){}fillSelects();renderHist()};
 
+/* ---------- treinos: banco de palavras ----------
+   As palavras são distribuídas nos níveis pelo número de letras, calculado no código. */
+const TR_WORDS=('tio pão fui sob má mar céu sol luz voz paz rei boi mel sal pé fé nó pó chá réu rua lua dia mão cão avó avô ovo uva asa ave sua teu meu vez vir ler ver dar ser ter ir rio fim bem mal mas nem sim não tal gás mês pai mãe lar par som tom dom fio giz nós sul boa lei cor dor oca gol mil pia bar ar ano ato bom luar véu chão cru nu já lá cá até pôr sem com bis tia fez diz paz trem '+
+'vida arte caça casa mesa bola gato rato sapo pato leão lago mato vaso fogo água ouro gelo neve vela sino roda sala cama copo faca sopa bolo doce café tela rede nave vale onda pena sono sede fome medo amor tudo nada cedo hoje onde aqui alto novo belo feio frio azul roxo rosa voar dedo pele boca olho ilha flor lobo urso foca gema mapa nota voto jogo rumo fala luta cena foto pipa cubo rima tema base meta data hora soma real pulo dado fita saco saia bota luva laço mola raro lido pura seda tatu ninho vila pico cova '+
+'nuvem pedra livro tigre cobra praia noite tarde leite peixe ideia dente nariz ponto sabor salto lápis ruído cinza carta vento chuva campo terra festa plano verde preto claro forte fraco longe perto sorte risco ritmo troca folha porta prato fruta banco barco carro ponte morro serra nação poema texto frase verso letra mundo tempo corpo braço perna sonho piano dança canto filho filha amigo aluno honra calma ordem cesta globo linha papel tinta vidro metal ferro cobre prata areia trigo milho arroz carne manga limão museu hotel aviso prazo nível valor preço custo lucro venda garfo fogão forno bolsa régua lento calmo homem manhã saúde verão pudim '+
+'oferta nenhum cabelo violão feijão queijo banana igreja escola janela parede cidade estado viagem imagem música poesia teatro cinema jardim árvore flores animal cavalo coelho girafa macaco abelha inseto planta colher panela toalha tapete quarto sapato camisa casaco chapéu caneta número módulo método padrão região origem futuro quente rápido grande bonito alegre triste sereno gentil astuto doente famoso antigo barato aberto branco marrom outono semana sábado minuto pessoa mulher doença médico estudo jornal emoção oceano cometa batata tomate cebola alface salada pincel escada tomada '+
+'projeto cadeira ciência pássaro semente espelho cozinha relógio mochila tesoura sistema pequeno ligeiro moderno fechado amarelo laranja dourado inverno domingo segundo vizinho criança família amizade remédio valente caminho momento governo empresa mercado produto serviço leitura escrita palavra notícia revista memória atenção alegria coragem verdade mentira justiça direito cultura planeta estrela galáxia energia exemplo desenho pintura cantora garagem armário lâmpada corrida estrada avenida cidadão morango abacaxi cenoura pimenta sorvete formiga pinguim teclado solução saudade sentido estação castelo muralha fazenda máquina martelo lembrar '+
+'corajoso sabonete banheiro borracha vermelho hospital aventura trabalho conversa pergunta resposta capítulo história tristeza natureza floresta montanha conceito chuveiro torneira biscoito elefante golfinho cachorro mosquito papagaio cobertor telefone mensagem internet programa problema objetivo processo educação primeiro terceiro distante profundo silêncio caminhão barragem colheita pesquisa invenção parafuso desenhar escrever aprender esquecer imaginar observar perceber gratidão biologia girassol orquídea melancia mexerica advogado bombeiro pescador generoso poderoso luminoso saboroso perigoso universo '+
+'liberdade escultura orquestra bicicleta motorista chocolate tartaruga borboleta geladeira resultado aeroporto plantação cientista paciência esperança confiança segurança linguagem gramática geografia filosofia sociedade população habitante montanhas cachoeira relâmpago primavera madrugada crocodilo andorinha margarida framboesa tangerina caminhada exercício movimento distância navegação professor estudante arquiteto sapateiro fotógrafo cuidadoso diferente excelente agradável delicioso televisão atividade atmosfera vegetação península invisível admirável submarino '+
+'astronomia computador descoberta ferramenta felicidade matemática literatura comunidade tempestade entardecer dinossauro velocidade transporte enfermeira engenheiro cozinheiro jardineiro costureira silencioso misterioso importante biblioteca calendário dicionário fotografia informação observação imaginação habilidade astronauta telescópio personagem celebração travessura continente hemisfério equilíbrio gigantesco cristalino incansável pensamento sentimento tecnologia democracia engenharia reciclagem passageiro geográfico matemático estratégia hipopótamo '+
+'arqueologia carpinteiro inteligente confortável comunicação microscópio laboratório temperatura agricultura alimentação aniversário brincadeira cordilheira arquipélago maravilhoso honestidade curiosidade compreensão experiência organização preocupação travesseiro enciclopédia criatividade apresentação documentário transparente inesquecível conhecimento movimentação oportunidade eletricidade independente responsável arquitetura meteorologia fotossíntese sustentável entendimento investigação planejamento aprendizagem espetacular significado perspectiva astronômico consequência universidade departamento instrumento equipamento apartamento restaurante supermercado aeronáutica helicóptero caminhoneiro fotográfico rinoceronte ornitorrinco arqueológico consideração demonstração comunicativo simplesmente naturalmente '+
+'corajosamente tranquilidade solidariedade paleontologia extraordinário desenvolvimento acontecimento administração transformação relacionamento comportamento surpreendente possibilidade probabilidade bibliotecário cinematográfico responsabilidade características constitucional internacional contemporâneo revolucionário aproveitamento reconhecimento funcionamento entretenimento aperfeiçoamento principalmente especialmente absolutamente imediatamente definitivamente interpretação representação participação extraterrestre biodiversidade meteorológico microrganismo infraestrutura multiplicação circunferência paralelepípedo descobrimento questionamento aproximadamente independência personalidade originalidade sensibilidade espiritualidade'
+).split(/\s+/);
+
+const TR_PAIRS=['anos luz','olho azul','pé frio','céu azul','mar alto','sol forte','rio raso','pão doce','chá preto','café puro','boa noite','bom dia','dia útil','luz forte','voz baixa','mão leve','ar puro','mesa posta','casa nova','rua larga','gato preto','cão bravo','mel puro','sal grosso','ovo frito','lua cheia','lua nova','vento sul','noite fria','dia claro','vida boa','alma leve','sono leve','pele lisa','chão firme','nota alta','ponto final','sala cheia','cama macia','bolo quente','água fresca','água doce','fogo alto','ouro velho','vela acesa','roda gigante','ideia nova','flor rara','rosa branca','lobo mau','urso polar','peixe dourado','trem lento','mapa antigo','livro aberto','carta longa','vento frio','chuva fina','campo verde','terra firme','festa junina','plano novo','sorte grande','folha seca','porta aberta','prato fundo','fruta madura','banco vazio','barco veloz','carro novo','ponte velha','morro alto','texto curto','frase feita','mundo novo','tempo bom','corpo são','braço forte','sonho bom','piano velho','dança lenta','amigo fiel','papel branco','tinta fresca','vidro fino','areia branca','arroz doce','queijo fresco','limão verde','museu aberto','hotel antigo','escola pública','janela aberta','cadeira velha','parede branca','cidade grande','viagem longa','imagem nítida','música alta','teatro lotado','cinema mudo','jardim florido','árvore alta','cavalo branco','coelho branco','abelha rainha','planta nova','panela quente','toalha limpa','sapato novo','camisa listrada','casaco grosso','chapéu preto','relógio parado','caneta azul','número par','número ímpar','futuro próximo','cozinha ampla','criança feliz','família unida','amizade sincera','remédio amargo','caminho certo','momento único','mercado livre','trabalho duro','leitura rápida','palavra certa','notícia boa','revista nova','história antiga','memória curta','alegria pura','coragem rara','verdade dura','estrela cadente','energia solar','desenho animado','pintura antiga','escada rolante','estrada longa','morango maduro','sorvete gelado','chocolate quente','elefante cinza','tartaruga marinha','golfinho rosa','borboleta azul','cachorro manso','papagaio falante','telefone fixo','mensagem curta','problema sério','solução simples','silêncio total','saudade imensa','castelo antigo','fazenda grande','máquina nova','primavera florida','madrugada fria','exercício diário','movimento lento','professor dedicado','estudante atento','biblioteca pública','calendário escolar','dicionário grosso','fotografia antiga','universo infinito','temperatura alta','brincadeira boa','continente gelado','pensamento livre','sentimento profundo','conhecimento geral','oportunidade única','tecnologia nova','apartamento novo','restaurante cheio','supermercado aberto','montanha nevada','floresta densa','oceano calmo','planeta vermelho','natureza viva','cultura popular','justiça social','liberdade total','governo federal','ciência exata','poesia moderna','arte moderna','luz solar','mau humor','bom humor','pão fresco','vinho tinto','vinho branco','suco natural','copo cheio','boca seca','nariz frio','dente forte','pele morena','olho vivo','mão aberta','pé direito','voz rouca','rei justo','boi manso','mar calmo','céu limpo','sol nascente','rio doce','chá verde','suco gelado','fim de ano','pé de vento','dia santo','casa velha','rua escura','sal fino','mel claro','gol de placa','tio rico','avó querida','asa quebrada','ave rara','uva roxa','ovo cozido','lar doce','som alto','tom grave','fio dental','giz branco','cor viva','dor aguda','bar lotado','ano novo','gelo seco','neve fofa','sino de bronze','sopa quente','doce de leite','onda grande','rede social','nave espacial','lago azul','mato alto','vaso chinês','urso branco','foca filhote','pipa colorida','cubo mágico','base sólida','meta clara','hora certa','luva grossa','bota nova','saia longa','nuvem branca','pedra lisa','tigre feroz','cobra cega','praia deserta','noite estrelada','tarde quente','leite quente','dente de leite','nariz empinado','salto alto','lápis de cor','campo aberto','festa surpresa','risco calculado','ritmo lento','prato raso','banco de praça','carro antigo','serra gelada','poema curto','verso livre','letra bonita','corpo leve','perna longa','filho mais velho','aluno novo','ordem alfabética','globo terrestre','linha reta','metal pesado','ferro velho','prata pura','trigo maduro','milho verde','carne assada','manga madura','preço justo','custo alto','fogão a lenha','forno quente','bolsa nova','régua torta','homem forte','manhã fria','verão quente'];
+/* ---------- treinos: módulos, tabela, metrônomo e cronômetro ---------- */
+const TR_MODS=[
+  {n:1,name:'Palavras',desc:'Palavras soltas, das curtas às longas.',levels:10,cols:'5 ou 4 colunas'},
+  {n:2,name:'Palavras e números',desc:'Palavras misturadas a números de 1 a 4 dígitos.',levels:5,cols:'4 colunas'},
+  {n:3,name:'Números',desc:'Só números, de 2 a 4 dígitos.',levels:5,cols:'4 colunas'},
+  {n:4,name:'Duplas de palavras',desc:'Pares de palavras lidos como uma unidade.',levels:10,cols:'2 colunas'}];
+const TR_ROWS=20;
+const trLen=w=>[...w].length;
+const TR_W=[...new Set(TR_WORDS.filter(Boolean))];
+const trByLen=(a,b)=>TR_W.filter(w=>trLen(w)>=a&&trLen(w)<=b);
+// módulo 1: um nível por faixa de tamanho; níveis 1 a 5 com 5 colunas, 6 a 10 com 4
+const TR_M1=[[1,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,12],[13,99]].map(r=>trByLen(r[0],r[1]));
+const TR_SM=trByLen(1,4),TR_MD=trByLen(5,7),TR_LG=trByLen(8,12);
+// módulo 4: duplas ordenadas pelo tamanho e divididas em 10 faixas
+const TR_P=(()=>{const p=[...new Set(TR_PAIRS)].filter(x=>x.split(' ').length===2).sort((a,b)=>trLen(a)-trLen(b));
+  return Array.from({length:10},(_,i)=>p.slice(Math.floor(i*p.length/10),Math.floor((i+1)*p.length/10)))})();
+// sorteio sem repetição até esgotar o conjunto
+function trBag(pool){let b=[];return()=>{if(!b.length)b=shuffle(pool);return b.pop()}}
+const trWords=(...pools)=>{const bags=pools.map(trBag);return()=>bags[rand(bags.length)]()};
+const trNum=d=>String(d===1?1+rand(9):10**(d-1)+rand(9*10**(d-1)));
+const trNums=ds=>()=>trNum(ds[rand(ds.length)]);
+function trSpec(mod,lvl){
+  if(mod===1){const w=trWords(TR_M1[lvl-1]),c=lvl<=5?5:4;return{cols:c,row:()=>Array.from({length:c},()=>w())}}
+  if(mod===2){const L=[[[TR_SM],[2]],[[TR_MD],[3]],[[TR_MD],[4]],[[TR_MD,TR_LG],[1,2,3,4]],[[TR_LG],[4]]][lvl-1];
+    const w=trWords(...L[0]),n=trNums(L[1]);return{cols:4,row:()=>shuffle([w(),w(),n(),n()])}}
+  if(mod===3){const n=trNums([[2],[3],[4],[2,3],[2,3,4]][lvl-1]);return{cols:4,row:()=>[n(),n(),n(),n()]}}
+  const p=trWords(TR_P[lvl-1]);return{cols:2,row:()=>[p(),p()]}}
+
+const TR={mod:0,lvl:1,cols:5,rows:[],run:false,t0:0,acc:0,tick:null};
+const MT={ctx:null,on:false,next:0,int:null};
+const trBpm=()=>+$('#tr-bpm').value||150;
+function trSetBpm(v){v=Math.round(Math.min(1000,Math.max(20,+v||150)));$('#tr-bpm').value=v;$('#tr-bpm-r').value=v;store.set('tr_bpm',v)}
+const clock=ms=>{const s=ms/1000,m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0')+'.'+Math.floor(s*10%10)};
+const TR_HINT='Atalhos: Espaço inicia ou pausa o cronômetro · M liga ou desliga o metrônomo · ↑ ↓ mudam 10 bpm.';
+function trMsg(t){$('#tr-msg').textContent=t||TR_HINT}
+
+// metrônomo: cliques agendados no relógio de áudio, precisos mesmo a 1000 bpm
+function mtClick(t){const c=MT.ctx,o=c.createOscillator(),g=c.createGain();o.type='square';o.frequency.value=1200;
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.2,t+0.001);g.gain.exponentialRampToValueAtTime(0.0001,t+0.025);
+  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+0.03);
+  setTimeout(()=>{const b=$('#tr-beat');b.classList.add('on');setTimeout(()=>b.classList.remove('on'),Math.min(90,24000/trBpm()))},Math.max(0,(t-c.currentTime)*1000))}
+function mtSched(){const now=MT.ctx.currentTime;if(MT.next<now-0.05)MT.next=now+0.02; // aba ficou em segundo plano
+  while(MT.next<now+0.12){mtClick(MT.next);MT.next+=60/trBpm()}}
+function mtStart(){if(MT.on)return;
+  try{MT.ctx=MT.ctx||new (window.AudioContext||window.webkitAudioContext)();MT.ctx.resume()}catch(e){trMsg('Este navegador não consegue tocar o metrônomo.');return}
+  MT.on=true;MT.next=MT.ctx.currentTime+0.05;mtSched();MT.int=setInterval(mtSched,25);trUi()}
+function mtStop(){clearInterval(MT.int);MT.on=false;if($('#tr-metro'))trUi()}
+
+// cronômetro: ao iniciar, liga também o metrônomo se ele estiver parado
+const trElapsed=()=>TR.acc+(TR.run?performance.now()-TR.t0:0);
+function tmShow(){$('#tr-time').textContent=clock(trElapsed())}
+function tmToggle(){
+  if(TR.run){TR.acc+=performance.now()-TR.t0;TR.run=false;clearInterval(TR.tick)}
+  else{TR.run=true;TR.t0=performance.now();TR.tick=setInterval(tmShow,100);if(!MT.on)mtStart();trMsg()}
+  tmShow();trUi()}
+// encerra cronômetro e metrônomo e salva no histórico (a partir de 1 segundo)
+function trFinish(){const ms=trElapsed();clearInterval(TR.tick);TR.run=false;TR.acc=0;mtStop();tmShow();
+  if(ms>=1000){const r={mod:TR.mod,lvl:TR.lvl,time:+(ms/1000).toFixed(1),bpm:trBpm()};logResult('treino',r);
+    trMsg('Treino salvo no histórico: '+clock(ms)+' a '+r.bpm+' bpm · Módulo '+r.mod+', nível '+r.lvl+'.')}
+  trUi()}
+function trUi(){$('#tr-metro').textContent=MT.on?'■ Parar metrônomo':'▶ Metrônomo';$('#tr-metro').classList.toggle('on',MT.on);
+  $('#tr-timer').textContent=TR.run?'❚❚ Pausar':TR.acc?'▶ Continuar':'▶ Iniciar';
+  $('#tr-end').disabled=!(TR.run||TR.acc||MT.on)}
+
+// tabela de 20 linhas ajustada para caber inteira na tela
+let trCanvas;
+function trFit(){const g=$('#tr-grid');if(cur!=='treino'||$('#tr-run').hidden||!TR.rows.length)return;
+  trCanvas=trCanvas||document.createElement('canvas').getContext('2d');trCanvas.font='500 100px '+getComputedStyle(g).fontFamily;
+  let em=0;TR.rows.forEach(r=>r.forEach(t=>{em=Math.max(em,trCanvas.measureText(t).width/100)}));
+  const fsW=(g.clientWidth/TR.cols)/(em+1.4);
+  const fsH=(innerHeight-(g.getBoundingClientRect().top+scrollY)-18)/TR_ROWS/1.5;
+  g.style.fontSize=Math.max(11,Math.min(fsW,fsH,34)).toFixed(1)+'px'}
+function trGen(){const sp=trSpec(TR.mod,TR.lvl);TR.cols=sp.cols;TR.rows=Array.from({length:TR_ROWS},sp.row);
+  const g=$('#tr-grid');g.style.gridTemplateColumns='repeat('+sp.cols+',minmax(0,1fr))';
+  g.innerHTML=TR.rows.map((r,i)=>r.map((t,j)=>'<span class="'+(i%2?'alt':'')+(j===sp.cols-1?' last':'')+'">'+esc(t)+'</span>').join('')).join('');
+  trFit()}
+function trLevel(l){if(trElapsed()>=1000)trFinish();TR.lvl=l;const s=store.get('tr_lvl',{});s[TR.mod]=l;store.set('tr_lvl',s);
+  $$('#tr-levels button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.l===l)));trGen()}
+function trOpen(mod){const M=TR_MODS[mod-1];TR.mod=mod;$('#tr-pick').hidden=true;$('#tr-run').hidden=false;
+  $('#tr-title').textContent='Módulo '+mod+' · '+M.name;
+  $('#tr-levels').innerHTML='<span>Nível</span>'+Array.from({length:M.levels},(_,i)=>'<button type="button" data-l="'+(i+1)+'" aria-pressed="false">'+(i+1)+'</button>').join('');
+  window.scrollTo(0,0);trMsg();trUi();trLevel(Math.min(store.get('tr_lvl',{})[mod]||1,M.levels));
+  if(!store.get('tr_help',false)){store.set('tr_help',true);trHelp()}} // primeira vez: mostra como treinar
+function trHelp(){const d=$('#tr-help');if(!d.open)d.showModal()}
+$$('[data-tr-help]').forEach(b=>b.onclick=trHelp);
+$('#tr-help').onclick=e=>{if(e.target===e.currentTarget)e.currentTarget.close()}; // clique fora fecha
+// sair do módulo ou da aba: salva o que estava rodando
+function trLeave(){if(trElapsed()>=1000)trFinish();else{clearInterval(TR.tick);TR.run=false;TR.acc=0;mtStop()}}
+function trPick(){trLeave();$('#tr-run').hidden=true;$('#tr-pick').hidden=false;
+  $('#tr-mods').innerHTML=TR_MODS.map(M=>{const rs=results.filter(r=>r.ex==='treino'&&r.mod===M.n),tot=rs.reduce((s,r)=>s+r.time,0);
+    return '<button type="button" class="tr-mod" data-m="'+M.n+'"><span class="n">Módulo '+M.n+'</span><b>'+M.name+'</b><small>'+M.desc+'</small>'+
+      '<span class="tags"><span>'+M.levels+' níveis</span><span>'+M.cols+'</span>'+(rs.length?'<span>'+rs.length+' '+(rs.length>1?'sessões':'sessão')+' · '+Math.round(tot/60)+' min</span>':'')+'</span></button>'}).join('')}
+$('#tr-mods').onclick=e=>{const b=e.target.closest('.tr-mod');if(b)trOpen(+b.dataset.m)};
+$('#tr-levels').onclick=e=>{const b=e.target.closest('button');if(b)trLevel(+b.dataset.l)};
+$('#tr-back').onclick=trPick;
+$('#tr-new').onclick=()=>{if(trElapsed()>=1000)trFinish();trGen()};
+$('#tr-metro').onclick=()=>MT.on?mtStop():mtStart();
+$('#tr-timer').onclick=tmToggle;
+$('#tr-end').onclick=trFinish;
+$('#tr-bpm-r').oninput=e=>trSetBpm(e.target.value);
+$('#tr-bpm').onchange=e=>trSetBpm(e.target.value);
+$('#tr-minus').onclick=()=>trSetBpm(trBpm()-10);
+$('#tr-plus').onclick=()=>trSetBpm(trBpm()+10);
+trSetBpm(store.get('tr_bpm',150));
+if(document.fonts)document.fonts.ready.then(trFit);
+
 /* ---------- controles, rotas, teclado ---------- */
 function bindRange(id){const r=$('#'+id),o=$('#'+id+'-o');const f=()=>o.textContent=r.value+' ppm';r.oninput=f;f()}
 function applyTargets(){const b=baseline();if(!b)return;$('#gd-ppm').value=b.guia;$('#rs-ppm').value=b.rsvp;bindRange('gd-ppm');bindRange('rs-ppm')}
-const VIEWS=['inicio','fundamentos','teste','guia','rsvp','schulte','flash','periferia','busca','biblioteca','historico'];let cur='inicio';
+const VIEWS=['inicio','fundamentos','teste','guia','rsvp','schulte','flash','periferia','busca','treino','biblioteca','historico'];let cur='inicio';
 function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h='inicio';cur=h;
-  gdStop();rsStop();scStop();flStop();pfStop();bsStop();
+  gdStop();rsStop();scStop();flStop();pfStop();bsStop();trLeave();
   VIEWS.forEach(v=>$('#v-'+v).hidden=v!==h);
-  $$('#nav a').forEach(a=>a.getAttribute('href')==='#'+h?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+  $$('#nav a,#home').forEach(a=>a.getAttribute('href')==='#'+h||(a.id==='home'&&h==='fundamentos')?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
   if(h==='inicio')renderDash();if(h==='historico')renderHist();if(h==='teste'){fillSelects();if(pendingTest){$('#ts-text').value=pendingTest;pendingTest=null}tsReset();$('#ts-result').hidden=true}
-  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scStart();if(h==='busca')bsStart();if(h==='biblioteca'){LB.del=null;renderLib()}
+  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scStart();if(h==='busca')bsStart();if(h==='treino')trPick();if(h==='biblioteca'){LB.del=null;renderLib()}
   window.scrollTo(0,0)}
 document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT|BUTTON|A/.test(e.target.tagName))return;
   if(e.code==='Space'&&(cur==='rsvp'||cur==='guia')){e.preventDefault();cur==='rsvp'?rsToggle():gdToggle()}
   if(cur==='rsvp'&&(e.code==='ArrowUp'||e.code==='ArrowDown')){e.preventDefault();const r=$('#rs-ppm');r.value=+r.value+(e.code==='ArrowUp'?10:-10);r.oninput()}
-  if(cur==='periferia'){if(e.code==='ArrowLeft')pfAnswer(true);if(e.code==='ArrowRight')pfAnswer(false)}});
-let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(cur==='inicio')renderChart(results.filter(r=>r.ex==='teste'))},150)});
+  if(cur==='periferia'){if(e.code==='ArrowLeft')pfAnswer(true);if(e.code==='ArrowRight')pfAnswer(false)}
+  if(cur==='treino'&&!$('#tr-run').hidden){if(e.code==='Space'){e.preventDefault();tmToggle()}if(e.code==='KeyM')MT.on?mtStop():mtStart();
+    if(e.code==='ArrowUp'||e.code==='ArrowDown'){e.preventDefault();trSetBpm(trBpm()+(e.code==='ArrowUp'?10:-10))}}});
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(cur==='inicio')renderChart(results.filter(r=>r.ex==='teste'));trFit()},150)});
 window.addEventListener('hashchange',()=>{route();checkAuth().then(ok=>{if(!ok)logout('Sessão expirada. Entre de novo.')}).catch(()=>{})});
-function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('sacada_theme',t)}catch(e){}$('#theme').textContent=t==='dark'?'Tema claro':'Tema escuro'}
+const IC_SUN='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
+      IC_MOON='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('sacada_theme',t)}catch(e){}
+  const b=$('#theme'),l=t==='dark'?'Usar tema claro':'Usar tema escuro';b.innerHTML=t==='dark'?IC_SUN:IC_MOON;b.title=l;b.setAttribute('aria-label',l)}
 $('#theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 setTheme(document.documentElement.dataset.theme||'light');
 async function start(){$('#boot-err').hidden=true;
