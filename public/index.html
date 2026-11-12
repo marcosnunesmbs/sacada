@@ -148,6 +148,7 @@ nav i{width:1px;height:16px;background:var(--input);margin:0 6px}
 #sch-grid button:active{transform:scale(.97)}
 #sch-grid button.hit{opacity:.3;box-shadow:none}
 #sch-grid button.miss{background:var(--bad);color:#fff;border-color:var(--bad)}
+#sch-grid button.idle{background:var(--soft);border-style:dashed;box-shadow:none}
 .timer{font-family:var(--mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums;background:var(--soft);padding:4px 12px;border-radius:var(--r)}
 
 /* flash e periferia */
@@ -508,7 +509,7 @@ body:not(.locked) #login{display:none}
   <p class="lead">Fixe o olhar no centro da tabela e clique os números em ordem crescente, localizando-os com a visão periférica, sem passear os olhos. Use como aquecimento de 2 minutos.</p>
   <div class="controls">
     <label class="ctl">Tamanho<select id="sc-n"><option value="3">3 × 3</option><option value="4">4 × 4</option><option value="5" selected>5 × 5</option><option value="6">6 × 6</option><option value="7">7 × 7</option></select></label>
-    <button class="btn primary" id="sc-start">Nova tabela</button>
+    <button class="btn primary" id="sc-start">Iniciar</button>
     <span class="timer" id="sc-timer">0,0 s</span>
     <span class="note" id="sc-best"></span>
   </div>
@@ -834,11 +835,17 @@ function rsStop(){clearTimeout(R.timer);if(R.playing)R.elapsed+=performance.now(
 function rsTick(){if(R.i>=R.tokens.length){R.elapsed+=performance.now()-R.t0;R.playing=false;R.done=true;$('#rs-play').textContent='Iniciar';
     const real=R.tokens.length/(R.elapsed/60000);logResult('rsvp',{ppm:+$('#rs-ppm').value,real:Math.round(real),words:R.tokens.length,ramp:$('#rs-ramp').checked});
     $('#rs-result').innerHTML='<strong>'+fmt(real)+' ppm reais</strong><span>'+R.tokens.length+' palavras em '+sec(R.elapsed/1000)+', já contando as pausas de pontuação. Diga em voz alta sobre o que era o texto. Se não souber, reduza 40 ppm.</span>';$('#rs-result').hidden=false;return}
-  const n=+$('#rs-n').value,g=R.tokens.slice(R.i,R.i+n);rsDraw(g);R.i+=g.length;$('#rs-bar').style.width=(100*R.i/R.tokens.length)+'%';
+  const n=+$('#rs-n').value,g=[];
+  // o grupo termina na palavra com pontuação, para a pausa cair no lugar certo
+  while(g.length<n&&R.i+g.length<R.tokens.length){const w=R.tokens[R.i+g.length];g.push(w);if(RS_PAUSE.test(w))break}
+  rsDraw(g);R.i+=g.length;$('#rs-bar').style.width=(100*R.i/R.tokens.length)+'%';
   let ppm=+$('#rs-ppm').value;if($('#rs-ramp').checked)ppm*=1+.5*R.i/R.tokens.length;
-  let d=60000/ppm*g.length;const last=g[g.length-1];
-  if(/[.!?]["”)]?$/.test(last))d*=1.9;else if(/[,;:]$/.test(last))d*=1.4;if(g.length===1&&last.length>9)d*=1.2;
+  const w=60000/ppm,last=g[g.length-1];let d=w*g.length;
+  // pausa extra somada (não só multiplicada), com piso para continuar perceptível em velocidades altas
+  if(RS_END.test(last))d+=Math.max(w*.9,180);else if(RS_COMMA.test(last))d+=Math.max(w*.45,90);
+  if(g.length===1&&last.length>9)d+=w*.2;
   R.timer=setTimeout(rsTick,d)}
+const RS_END=/[.!?…]+["'”’»)\]]*$/,RS_COMMA=/[,;:—–]["'”’»)\]]*$/,RS_PAUSE=/[.!?…,;:—–]["'”’»)\]]*$/;
 function rsToggle(){if(R.playing)return rsStop();if(R.done)rsLoad();R.playing=true;R.t0=performance.now();$('#rs-play').textContent='Pausar';rsTick()}
 $('#rs-play').onclick=rsToggle;$('#rs-reset').onclick=rsLoad;$('#rs-text').onchange=rsLoad;
 
@@ -846,7 +853,12 @@ $('#rs-play').onclick=rsToggle;$('#rs-reset').onclick=rsLoad;$('#rs-text').oncha
 const S={next:1,n:5,t0:0,int:null,errs:0,on:false};
 function scBest(){const n=+$('#sc-n').value,b=results.filter(r=>r.ex==='schulte'&&r.n===n).map(r=>r.time);$('#sc-best').textContent=b.length?'Seu melhor em '+n+' × '+n+': '+sec(Math.min(...b)):''}
 function scStop(){clearInterval(S.int);S.on=false}
-function scStart(){scStop();S.n=+$('#sc-n').value;S.next=1;S.errs=0;S.on=true;$('#sc-result').hidden=true;
+// estado inicial: grade vazia e cronômetro parado até clicar em "Iniciar"
+function scReady(){scStop();S.n=+$('#sc-n').value;$('#sc-result').hidden=true;$('#sc-timer').textContent=sec(0);$('#sc-start').textContent='Iniciar';
+  const g=$('#sch-grid');g.style.gridTemplateColumns='repeat('+S.n+',1fr)';g.innerHTML='';
+  for(let i=0;i<S.n*S.n;i++){const b=document.createElement('button');b.className='idle';b.tabIndex=-1;b.setAttribute('aria-hidden','true');b.onclick=scStart;g.append(b)}
+  scBest()}
+function scStart(){scStop();S.n=+$('#sc-n').value;S.next=1;S.errs=0;S.on=true;$('#sc-result').hidden=true;$('#sc-start').textContent='Nova tabela';
   const g=$('#sch-grid');g.style.gridTemplateColumns='repeat('+S.n+',1fr)';g.innerHTML='';
   shuffle(Array.from({length:S.n*S.n},(_,i)=>i+1)).forEach(v=>{const b=document.createElement('button');b.textContent=v;b.onclick=()=>scClick(b,v);g.append(b)});
   S.t0=performance.now();S.int=setInterval(()=>$('#sc-timer').textContent=sec((performance.now()-S.t0)/1000),100);scBest()}
@@ -854,7 +866,7 @@ function scClick(b,v){if(!S.on)return;if(v===S.next){b.classList.add('hit');S.ne
     if(S.next>S.n*S.n){const t=(performance.now()-S.t0)/1000;scStop();$('#sc-timer').textContent=sec(t);logResult('schulte',{n:S.n,time:+t.toFixed(1),errs:S.errs});
       $('#sc-result').innerHTML='<strong>'+sec(t)+'</strong><span>'+S.errs+' erro(s). Referência para 5 × 5: abaixo de 30 s é bom, abaixo de 20 s é muito bom.</span>';$('#sc-result').hidden=false;scBest()}}
   else{S.errs++;b.classList.add('miss');setTimeout(()=>b.classList.remove('miss'),220)}}
-$('#sc-start').onclick=scStart;$('#sc-n').onchange=scStart;
+$('#sc-start').onclick=scStart;$('#sc-n').onchange=scReady;
 
 /* ---------- flash ---------- */
 const WORDS=[['casa','livro','tempo','mundo','porta','verde','noite','campo','papel','festa','linha','ponte','sonho','vento','chuva','pedra','letra','fonte'],
@@ -1128,7 +1140,7 @@ function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h='inicio';c
   VIEWS.forEach(v=>$('#v-'+v).hidden=v!==h);
   $$('#nav a,#home').forEach(a=>a.getAttribute('href')==='#'+h||(a.id==='home'&&h==='fundamentos')?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
   if(h==='inicio')renderDash();if(h==='historico')renderHist();if(h==='teste'){fillSelects();if(pendingTest){$('#ts-text').value=pendingTest;pendingTest=null}tsReset();$('#ts-result').hidden=true}
-  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scStart();if(h==='busca')bsStart();if(h==='treino')trPick();if(h==='biblioteca'){LB.del=null;renderLib()}
+  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scReady();if(h==='busca')bsStart();if(h==='treino')trPick();if(h==='biblioteca'){LB.del=null;renderLib()}
   window.scrollTo(0,0)}
 document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT|BUTTON|A/.test(e.target.tagName))return;
   if(e.code==='Space'&&(cur==='rsvp'||cur==='guia')){e.preventDefault();cur==='rsvp'?rsToggle():gdToggle()}
