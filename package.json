@@ -1,0 +1,12 @@
+{
+  "name": "leitura",
+  "version": "1.0.0",
+  "description": "Sacada: treinador de leitura rápida com textos e questionários gerados via OpenRouter",
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": { "node": ">=18" }
+}

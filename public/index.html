@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sacada Leitura Rápida</title>
+<script>(function(){var t='light';try{t=localStorage.getItem('sacada_theme')||'light'}catch(e){}document.documentElement.dataset.theme=t})()</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,500&display=swap">
+<style>
+/* Layout: bancada de laboratório de leitura. Faixa de navegação no topo, uma coluna de trabalho,
+   o texto de leitura sempre em serifa sobre "papel" branco; marca-texto amarelo é o único gesto forte. */
+:root{
+  --bg:#EDF0F5; --surface:#FFFFFF; --ink:#141B2D; --muted:#566076; --line:#D3D9E4;
+  --accent:#2437D9; --accent-ink:#FFFFFF; --mark:#FFD84A; --mark-ink:#141B2D;
+  --good:#17804F; --bad:#C2352B; --band:rgba(36,55,217,.08);
+  --read:'Literata',Georgia,'Times New Roman',serif;
+  --ui:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#0F1320; --surface:#181E30; --ink:#E8ECF5; --muted:#9AA4BA; --line:#2B3452;
+  --accent:#93A1FF; --accent-ink:#0F1320; --mark:#E7BC2A; --mark-ink:#141B2D;
+  --good:#5FD29A; --bad:#FF8272; --band:rgba(147,161,255,.12); color-scheme:dark }
+
+:root{color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:16px;line-height:1.55}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 72px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--read);font-weight:600;line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,4vw,34px)} h2{font-size:21px} h3{font-size:17px}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* topo */
+.top{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand b{font-family:var(--read);font-style:italic;font-weight:500;font-size:28px;letter-spacing:-.01em}
+.brand svg{width:44px;height:18px;align-self:center}
+.brand span{color:var(--muted);font-size:14px}
+.navscroll{overflow-x:auto;border-bottom:1px solid var(--line)}
+nav{display:flex;gap:2px;min-width:max-content}
+nav a{padding:9px 12px;text-decoration:none;color:var(--muted);font-weight:500;font-size:14.5px;border-bottom:2px solid transparent;white-space:nowrap}
+nav a:hover{color:var(--ink)}
+nav a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav i{width:1px;background:var(--line);margin:8px 6px}
+
+/* blocos */
+.view{display:flex;flex-direction:column;gap:22px}
+.lead{color:var(--muted);max-width:66ch}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.controls{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end}
+.ctl{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted);font-weight:500;min-width:0}
+.ctl select,.ctl input[type=text],textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;max-width:100%}
+.ctl input[type=range]{width:180px;max-width:100%;accent-color:var(--accent)}
+.ctl output{font-family:var(--mono);color:var(--ink);font-size:14px}
+.chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink);font-size:14px}
+.chk input{accent-color:var(--accent);width:16px;height:16px}
+.btn{font:inherit;font-weight:600;font-size:15px;padding:9px 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.result{border-left:3px solid var(--accent);padding:4px 0 4px 14px;display:flex;flex-direction:column;gap:6px}
+.result strong{font-family:var(--mono);font-size:20px}
+.note{font-size:14px;color:var(--muted)}
+.bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar div{height:100%;width:0;background:var(--accent)}
+
+/* painel */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.stat{padding:16px 18px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat:first-child{border-left:0}
+.stat b{font-family:var(--mono);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:12.5px}
+.two{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:22px;align-items:start}
+.two>*{min-width:0;display:flex;flex-direction:column;gap:12px}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.steps li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:start;padding:11px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0}
+.steps .tick{width:18px;height:18px;border:1.5px solid var(--muted);border-radius:50%;margin-top:3px}
+.steps li.done .tick{background:var(--good);border-color:var(--good)}
+.steps a{font-weight:600;text-decoration:none;color:var(--ink)}
+.steps a:hover{color:var(--accent)}
+.steps small{display:block;color:var(--muted);font-size:13px}
+.steps .min{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--accent);vertical-align:middle;margin-right:6px}
+.legend i.e{border-top:2px dashed var(--good)}
+#chart svg{display:block;width:100%;height:auto}
+
+/* texto de leitura */
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,4vw,34px)}
+.reading{font-family:var(--read);font-size:19px;line-height:1.7;max-width:64ch;margin:0 auto;display:flex;flex-direction:column;gap:1em}
+#guia-box{max-height:min(62vh,540px);overflow-y:auto;position:relative;scroll-behavior:smooth}
+#guia-box span.on{background:var(--mark);color:var(--mark-ink);box-shadow:0 0 0 .16em var(--mark);border-radius:1px}
+#guia-box span.read{color:var(--muted)}
+#guia-box.erase span.read{opacity:.12}
+
+/* rsvp */
+.rsvp{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;height:200px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;overflow:hidden;font-family:var(--read);font-size:clamp(28px,6.4vw,54px);white-space:pre}
+.rsvp.multi{font-size:clamp(19px,4.4vw,40px)}
+.rsvp::before,.rsvp::after{content:"";position:absolute;left:50%;width:2px;height:22px;background:var(--line)}
+.rsvp::before{top:26px}.rsvp::after{bottom:26px}
+.rsvp .pre{text-align:right}.rsvp .piv{color:var(--bad)}.rsvp.multi .piv{color:inherit}
+
+/* schulte */
+#sch-grid{display:grid;gap:6px;width:min(100%,460px);margin:0 auto}
+#sch-grid button{aspect-ratio:1;font-family:var(--mono);font-size:clamp(15px,4vw,24px);font-weight:600;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;cursor:pointer;padding:0}
+#sch-grid button.hit{opacity:.35}
+#sch-grid button.miss{background:var(--bad);color:var(--surface)}
+.timer{font-family:var(--mono);font-size:22px;font-variant-numeric:tabular-nums}
+
+/* flash e periferia */
+.stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;height:190px;overflow:hidden}
+#fl-disp{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:clamp(22px,5.4vw,40px);letter-spacing:.04em;text-align:center;padding:0 10px}
+#fl-in{font-family:var(--mono);font-size:18px;width:min(100%,360px)}
+.fb{min-height:1.6em;font-weight:600}
+.ok{color:var(--good)}.no{color:var(--bad)}
+#pf-dot{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:50%;background:var(--accent)}
+.pf-item{position:absolute;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:.06em}
+
+/* busca */
+#bs-grid{display:flex;flex-wrap:wrap;gap:8px}
+#bs-grid button{font-family:var(--read);font-size:18px;padding:5px 10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;cursor:pointer}
+#bs-grid button.found{background:var(--mark);color:var(--mark-ink);border-color:var(--mark)}
+#bs-grid button.miss{border-color:var(--bad);color:var(--bad)}
+.target{font-family:var(--read);font-size:22px;font-weight:600;background:var(--mark);color:var(--mark-ink);padding:0 8px;border-radius:3px}
+
+/* perguntas */
+fieldset{border:0;border-top:1px solid var(--line);padding:14px 0 6px;margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+legend{font-weight:600;padding:0;float:left;width:100%;margin-bottom:6px}
+fieldset label{display:flex;gap:8px;align-items:flex-start;font-size:15px;clear:both}
+fieldset input{accent-color:var(--accent);margin-top:5px}
+label.right{color:var(--good);font-weight:600} label.wrong{color:var(--bad);text-decoration:line-through}
+
+/* fundamentos */
+.prose{display:flex;flex-direction:column;gap:14px;max-width:68ch}
+.prose h2{margin-top:18px}
+.prose ul,.prose ol{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.fig svg{width:100%;height:auto;display:block}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.mono{white-space:nowrap}
+textarea{width:100%;min-height:240px;font-family:var(--read);font-size:17px;line-height:1.6;resize:vertical}
+
+@media (max-width:760px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat:nth-child(3){border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+  .two{grid-template-columns:minmax(0,1fr)}
+  .reading{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){ #guia-box{scroll-behavior:auto} }
+.brand .btn{margin-left:auto;align-self:center;font-size:13px;padding:6px 12px}
+.btn.sm{font-size:13px;padding:5px 10px;white-space:nowrap}
+.aistat{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--bad);display:inline-block}
+.dot.on{background:var(--good)}
+.wait{color:var(--muted)}
+.panel .ctl input[type=text],.panel .ctl textarea{width:100%}
+.ctl input[type=file]{font:inherit;font-size:13px;color:var(--muted);max-width:100%}
+#la-body{min-height:150px}
+.acts{flex-wrap:nowrap;gap:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="fb no" id="boot-err" hidden></p>
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 44 18" aria-hidden="true"><path d="M5 14 Q22 -6 39 14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><circle cx="5" cy="14" r="3" fill="var(--ink)"/><circle cx="39" cy="14" r="3" fill="var(--ink)"/></svg>
+    <b>Sacada</b><span>treino de leitura rápida, medido em palavras por minuto</span>
+    <button class="btn" id="theme" type="button"></button>
+  </div>
+  <div class="navscroll"><nav id="nav">
+    <a href="#inicio">Painel</a><a href="#fundamentos">Fundamentos</a><i></i>
+    <a href="#teste">Teste</a><a href="#guia">Guia visual</a><a href="#rsvp">RSVP</a><a href="#schulte">Schulte</a><a href="#flash">Flash</a><a href="#periferia">Periferia</a><a href="#busca">Busca</a><i></i>
+    <a href="#biblioteca">Biblioteca</a><a href="#historico">Histórico</a>
+  </nav></div>
+</header>
+
+<!-- PAINEL -->
+<section class="view" id="v-inicio">
+  <h1>Painel</h1>
+  <div class="stats">
+    <div class="stat"><span class="label">Velocidade base</span><b id="st-ppm">–</b><small>ppm no último teste</small></div>
+    <div class="stat"><span class="label">Compreensão</span><b id="st-comp">–</b><small>acertos no último teste</small></div>
+    <div class="stat"><span class="label">Velocidade efetiva</span><b id="st-ef">–</b><small>ppm × compreensão</small></div>
+    <div class="stat"><span class="label">Sequência</span><b id="st-streak">0</b><small>dias seguidos de treino</small></div>
+  </div>
+  <div class="two">
+    <div>
+      <h2>Sessão de hoje</h2>
+      <p class="note" id="plan-note">Faça o teste primeiro. Ele define sua linha de base e as velocidades-alvo dos exercícios.</p>
+      <div class="panel"><ol class="steps" id="steps"></ol></div>
+    </div>
+    <div>
+      <h2>Evolução nos testes</h2>
+      <div class="panel"><div id="chart"></div></div>
+      <div class="legend"><span><i></i>velocidade (ppm)</span><span><i class="e"></i>velocidade efetiva</span></div>
+      <p class="note">O número que importa é a velocidade efetiva. Ler a 500 ppm entendendo 40% equivale a 200 ppm.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FUNDAMENTOS -->
+<section class="view" id="v-fundamentos" hidden>
+  <h1>Fundamentos</h1>
+  <div class="prose">
+    <p>Ler mais rápido é possível, dentro de limites. Esta página resume o que a pesquisa sobre leitura mostra, separa o que funciona do que é promessa de curso, e explica o papel de cada exercício.</p>
+
+    <h2>Como os olhos leem</h2>
+    <div class="fig">
+      <svg viewBox="0 0 464 112" role="img" aria-label="Fixações e sacadas sobre uma linha de texto, com uma regressão">
+        <g fill="none" stroke="var(--accent)" stroke-width="1.5">
+          <path d="M60.5 46 Q90 22 119 46"/><path d="M119 46 Q164 18 209 46"/><path d="M209 46 Q245 22 281 46"/><path d="M281 46 Q317 22 353 46"/><path d="M281 46 Q346 6 411.5 46"/>
+        </g>
+        <path d="M353 82 Q317 108 281 82" fill="none" stroke="var(--bad)" stroke-width="1.5"/>
+        <g fill="var(--ink)"><circle cx="60.5" cy="48" r="3.5"/><circle cx="119" cy="48" r="3.5"/><circle cx="209" cy="48" r="3.5"/><circle cx="281" cy="48" r="4.5"/><circle cx="353" cy="48" r="3.5"/><circle cx="411.5" cy="48" r="3.5"/></g>
+        <text x="20" y="72" textLength="423" lengthAdjust="spacingAndGlyphs" fill="var(--ink)" style="font-family:var(--mono);font-size:15px">O olhar avança em saltos e para em cada fixação</text>
+      </svg>
+      <p class="note">Pontos: fixações (200 a 250 ms cada). Arcos azuis: sacadas para a frente (7 a 9 letras). Arco vermelho: uma regressão.</p>
+    </div>
+    <ul>
+      <li><b>Fixações e sacadas.</b> O olho avança em saltos e só capta texto quando está parado. Um adulto faz de 3 a 4 fixações por segundo.</li>
+      <li><b>Campo útil pequeno.</b> A visão nítida cobre cerca de 2 graus. Você aproveita 3 a 4 letras à esquerda da fixação e até 14 ou 15 à direita, mas identifica palavras inteiras em um trecho bem menor. Não dá para "fotografar" uma linha ou uma página.</li>
+      <li><b>Regressões.</b> De 10% a 15% dos saltos voltam atrás. Parte é hábito ou distração, parte é necessária para entender. Bloquear todas derruba a compreensão.</li>
+      <li><b>Subvocalização.</b> A "voz interna" participa da compreensão. Não se elimina; o que se reduz é o hábito de articular cada palavra devagar.</li>
+    </ul>
+
+    <h2>O que esperar de verdade</h2>
+    <ul>
+      <li>Adultos leem em silêncio, com boa compreensão, entre 200 e 300 ppm. Leitores muito treinados chegam a 350 ou 400 em textos familiares.</li>
+      <li>Acima de 400 a 500 ppm a compreensão cai de forma consistente. Isso é leitura dinâmica no sentido de varredura (skimming), útil para triagem, e não leitura completa.</li>
+      <li>Promessas de 1.000 ppm ou mais com compreensão total não se sustentam em testes controlados (revisão de Rayner e colegas, 2016).</li>
+      <li>O ganho realista com treino é de 20% a 50% sobre a sua base em textos do seu dia a dia, mais a habilidade de mudar de marcha conforme o material.</li>
+    </ul>
+
+    <h2>O que aumenta a velocidade</h2>
+    <ol>
+      <li><b>Reconhecer palavras mais depressa.</b> É o fator principal. Vem de volume de leitura e de vocabulário. Quem lê muito sobre um tema lê esse tema mais rápido.</li>
+      <li><b>Conhecer o assunto.</b> Conhecimento prévio encurta fixações e reduz releituras.</li>
+      <li><b>Pré-leitura.</b> Antes de ler, gaste 1 a 2 minutos em título, subtítulos, primeiro e último parágrafos, negritos e figuras. Com o mapa na cabeça, a leitura flui.</li>
+      <li><b>Definir o propósito.</b> Decida se vai varrer, ler normalmente ou estudar. Boa parte do "ler devagar" é ler tudo no modo estudo.</li>
+      <li><b>Ritmo guiado.</b> Um marcador (dedo, caneta, o Guia visual daqui) mantém o olhar avançando, corta regressões por hábito e segura a atenção.</li>
+      <li><b>Grupos de palavras.</b> Fixar por blocos de sentido ("no início do ano", "a maior parte") em vez de palavra por palavra. Comece e termine cada linha uma ou duas palavras para dentro da margem.</li>
+      <li><b>Atenção.</b> Blocos de 20 a 25 minutos, celular longe. Divagação é a principal causa de releitura.</li>
+      <li><b>Recapitular.</b> Ao fim de cada seção, feche os olhos e diga os pontos principais. Fixa a memória e mostra se o ritmo estava alto demais.</li>
+    </ol>
+
+    <h2>As três marchas</h2>
+    <div class="tablewrap"><table>
+      <tr><th>Modo</th><th>Ritmo</th><th>Quando usar</th></tr>
+      <tr><td>Busca (scanning)</td><td class="mono">600+ ppm</td><td>Localizar um dado, um nome, um artigo de lei. Você não lê, procura.</td></tr>
+      <tr><td>Varredura (skimming)</td><td class="mono">400–700 ppm</td><td>Triagem, revisão de algo já lido, decidir se vale ler inteiro.</td></tr>
+      <tr><td>Leitura normal</td><td class="mono">200–400 ppm</td><td>Entender o texto. É a marcha que o treino acelera.</td></tr>
+      <tr><td>Estudo</td><td class="mono">100–200 ppm</td><td>Material denso, memorização, textos técnicos novos.</td></tr>
+    </table></div>
+
+    <h2>O que cada exercício treina</h2>
+    <div class="tablewrap"><table>
+      <tr><th>Exercício</th><th>Treina</th><th>Observação</th></tr>
+      <tr><td><a href="#teste">Teste</a></td><td>Mede ppm e compreensão</td><td>É a régua. Repita 1 vez por semana, sempre com texto novo.</td></tr>
+      <tr><td><a href="#guia">Guia visual</a></td><td>Ritmo, menos regressões, grupos de palavras</td><td>O exercício central. É o que mais se transfere para a leitura real.</td></tr>
+      <tr><td><a href="#rsvp">RSVP</a></td><td>Tolerância a ritmo alto, menos subvocalização lenta</td><td>Treino de sobrecarga. Para leitura normal é pior que texto corrido, porque impede voltar.</td></tr>
+      <tr><td><a href="#flash">Flash</a></td><td>Reconhecimento rápido de palavras e blocos</td><td>Use palavras e frases; dígitos servem de aquecimento.</td></tr>
+      <tr><td><a href="#schulte">Schulte</a></td><td>Atenção visual e foco</td><td>Bom aquecimento. A evidência de ganho direto em leitura é fraca.</td></tr>
+      <tr><td><a href="#periferia">Periferia</a></td><td>Atenção ao que está fora do ponto fixado</td><td>Não amplia a retina. Treina usar melhor o que já se vê.</td></tr>
+      <tr><td><a href="#busca">Busca</a></td><td>Varredura por palavra-alvo</td><td>Habilidade própria, útil para consultar textos longos.</td></tr>
+    </table></div>
+
+    <h2>Plano de quatro semanas</h2>
+    <p>Cerca de 15 minutos por dia, cinco ou seis dias por semana. As velocidades são relativas à sua base (o ppm do primeiro teste) e o Painel calcula os valores para você.</p>
+    <div class="tablewrap"><table>
+      <tr><th>Semana</th><th>Guia visual</th><th>RSVP</th><th>Foco</th></tr>
+      <tr><td>1</td><td class="mono">base +15%</td><td class="mono">base +30%</td><td>Medir a base. Acostumar a seguir o marcador sem voltar. Grupos de 2 palavras.</td></tr>
+      <tr><td>2</td><td class="mono">base +25%</td><td class="mono">base +45%</td><td>Grupos de 3 palavras. Flash com palavras. Pré-leitura em tudo o que ler fora daqui.</td></tr>
+      <tr><td>3</td><td class="mono">base +35%</td><td class="mono">base +60%</td><td>Ligar "apagar o que já li". RSVP em modo progressivo. Flash com frases.</td></tr>
+      <tr><td>4</td><td class="mono">base +45%</td><td class="mono">base +75%</td><td>Alternar: um texto no ritmo alto, outro em +25% com compreensão total. Teste final.</td></tr>
+    </table></div>
+    <p>Regra de ajuste: compreensão abaixo de 70% no teste significa ritmo alto demais; mantenha a velocidade da semana anterior. Acima de 85%, pode subir. Fora do aplicativo, leia 20 minutos por dia com um guia físico (dedo ou caneta) no ritmo treinado. É ali que o ganho se fixa.</p>
+  </div>
+</section>
+
+<!-- TESTE -->
+<section class="view" id="v-teste" hidden>
+  <h1>Teste de velocidade e compreensão</h1>
+  <p class="lead">Leia no seu ritmo normal, para entender. Ao terminar, responda às perguntas sem voltar ao texto. São cinco perguntas sorteadas do banco do texto, com as alternativas embaralhadas. Prefira sempre um texto inédito.</p>
+  <div class="controls" id="ts-controls">
+    <label class="ctl">Texto<select id="ts-text" class="textsel"></select></label>
+    <button class="btn primary" id="ts-start">Começar a leitura</button>
+    <a class="btn" href="#biblioteca" style="text-decoration:none">Gerar texto novo</a>
+  </div>
+  <div class="paper" id="ts-paper" hidden><div class="reading" id="ts-body"></div></div>
+  <div class="row" id="ts-doneRow" hidden><button class="btn primary" id="ts-done">Terminei de ler</button><span class="note">O cronômetro está correndo.</span></div>
+  <form class="panel" id="ts-quiz" hidden></form>
+  <div class="result" id="ts-result" hidden></div>
+</section>
+
+<!-- GUIA -->
+<section class="view" id="v-guia" hidden>
+  <h1>Guia visual</h1>
+  <p class="lead">Um marca-texto percorre o texto no ritmo escolhido. Acompanhe-o com os olhos e não volte atrás. É a versão digital de passar o dedo sob a linha. Barra de espaço inicia e pausa.</p>
+  <div class="controls">
+    <label class="ctl">Texto<select id="gd-text" class="textsel"></select></label>
+    <label class="ctl">Velocidade <output id="gd-ppm-o"></output><input type="range" id="gd-ppm" min="120" max="900" step="10" value="280"></label>
+    <label class="ctl">Palavras por grupo<select id="gd-n"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
+    <label class="ctl chk"><input type="checkbox" id="gd-erase">Apagar o que já li</label>
+    <div class="row"><button class="btn primary" id="gd-play">Iniciar</button><button class="btn" id="gd-reset">Reiniciar</button></div>
+  </div>
+  <div class="bar"><div id="gd-bar"></div></div>
+  <div class="paper" id="guia-box"><div class="reading" id="gd-body"></div></div>
+  <div class="result" id="gd-result" hidden></div>
+</section>
+
+<!-- RSVP -->
+<section class="view" id="v-rsvp" hidden>
+  <h1>RSVP</h1>
+  <p class="lead">As palavras aparecem em sequência no mesmo ponto, sem movimento dos olhos. Fixe a letra vermelha e deixe o sentido chegar sem repetir cada palavra mentalmente. Use acima do seu ritmo confortável, por poucos minutos. Espaço inicia e pausa; setas para cima e para baixo ajustam a velocidade.</p>
+  <div class="controls">
+    <label class="ctl">Texto<select id="rs-text" class="textsel"></select></label>
+    <label class="ctl">Velocidade <output id="rs-ppm-o"></output><input type="range" id="rs-ppm" min="100" max="1000" step="10" value="320"></label>
+    <label class="ctl">Palavras por vez<select id="rs-n"><option>1</option><option>2</option><option>3</option></select></label>
+    <label class="ctl chk"><input type="checkbox" id="rs-ramp">Progressivo (termina 50% mais rápido)</label>
+    <div class="row"><button class="btn primary" id="rs-play">Iniciar</button><button class="btn" id="rs-reset">Reiniciar</button></div>
+  </div>
+  <div class="rsvp" id="rs-stage" aria-live="off"><span class="pre"></span><span class="piv"></span><span class="post"></span></div>
+  <div class="bar"><div id="rs-bar"></div></div>
+  <div class="result" id="rs-result" hidden></div>
+</section>
+
+<!-- SCHULTE -->
+<section class="view" id="v-schulte" hidden>
+  <h1>Tabela de Schulte</h1>
+  <p class="lead">Fixe o olhar no centro da tabela e clique os números em ordem crescente, localizando-os com a visão periférica, sem passear os olhos. Use como aquecimento de 2 minutos.</p>
+  <div class="controls">
+    <label class="ctl">Tamanho<select id="sc-n"><option value="3">3 × 3</option><option value="4">4 × 4</option><option value="5" selected>5 × 5</option><option value="6">6 × 6</option><option value="7">7 × 7</option></select></label>
+    <button class="btn primary" id="sc-start">Nova tabela</button>
+    <span class="timer" id="sc-timer">0,0 s</span>
+    <span class="note" id="sc-best"></span>
+  </div>
+  <div id="sch-grid"></div>
+  <div class="result" id="sc-result" hidden></div>
+</section>
+
+<!-- FLASH -->
+<section class="view" id="v-flash" hidden>
+  <h1>Flash</h1>
+  <p class="lead">Um número, uma palavra ou uma frase aparece por uma fração de segundo. Digite o que viu e confirme com Enter. A cada acerto o item cresce; a cada erro, encolhe. São 10 rodadas.</p>
+  <div class="controls">
+    <label class="ctl">Conteúdo<select id="fl-mode"><option value="digitos">Dígitos</option><option value="palavras" selected>Palavras</option><option value="frases">Frases</option></select></label>
+    <label class="ctl">Exposição<select id="fl-dur"><option value="500">500 ms</option><option value="300" selected>300 ms</option><option value="200">200 ms</option><option value="120">120 ms</option><option value="80">80 ms</option></select></label>
+    <button class="btn primary" id="fl-start">Iniciar</button>
+    <span class="note mono" id="fl-count"></span>
+  </div>
+  <div class="stage"><div id="fl-disp">+</div></div>
+  <form class="row" id="fl-form"><label class="ctl">O que você viu?<input type="text" id="fl-in" autocomplete="off" autocapitalize="off" spellcheck="false" disabled></label><button class="btn" id="fl-ok" disabled>Confirmar</button></form>
+  <div class="fb" id="fl-fb"></div>
+  <div class="result" id="fl-result" hidden></div>
+</section>
+
+<!-- PERIFERIA -->
+<section class="view" id="v-periferia" hidden>
+  <h1>Periferia</h1>
+  <p class="lead">Mantenha o olhar no ponto central. Dois grupos de letras piscam nas laterais por 180 ms, tempo curto demais para mover os olhos. Responda se eram iguais. A cada acerto eles se afastam do centro. São 12 rodadas.</p>
+  <div class="controls">
+    <button class="btn primary" id="pf-start">Iniciar</button>
+    <span class="note mono" id="pf-count"></span>
+  </div>
+  <div class="stage" id="pf-stage"><div id="pf-dot"></div><div class="pf-item" id="pf-l"></div><div class="pf-item" id="pf-r"></div></div>
+  <div class="row"><button class="btn" id="pf-same" disabled>← Iguais</button><button class="btn" id="pf-diff" disabled>Diferentes →</button><span class="fb" id="pf-fb"></span></div>
+  <div class="result" id="pf-result" hidden></div>
+</section>
+
+<!-- BUSCA -->
+<section class="view" id="v-busca" hidden>
+  <h1>Busca visual</h1>
+  <p class="lead">Encontre todas as ocorrências da palavra-alvo entre palavras parecidas. Varra em linhas, sem ler cada item. É a marcha de busca: localizar sem ler tudo.</p>
+  <div class="controls">
+    <button class="btn primary" id="bs-start">Nova rodada</button>
+    <span id="bs-info" class="row"></span>
+    <span class="timer" id="bs-timer"></span>
+  </div>
+  <div id="bs-grid"></div>
+  <div class="result" id="bs-result" hidden></div>
+</section>
+
+<!-- BIBLIOTECA -->
+<section class="view" id="v-biblioteca" hidden>
+  <h1>Biblioteca de textos</h1>
+  <p class="lead">Um teste só mede leitura de verdade com um texto que você nunca viu. Gere textos novos por tema ou cadastre os seus. Para cada um, a IA monta um banco de perguntas; o teste sorteia cinco e embaralha as alternativas.</p>
+  <p class="aistat" id="lb-ai"></p>
+  <div class="two">
+    <form class="panel" id="lb-gen">
+      <h2>Gerar texto inédito</h2>
+      <label class="ctl">Tema<input type="text" id="lg-tema" maxlength="200" placeholder="ex.: história da aviação, proteção de dados, astronomia" required></label>
+      <div class="controls">
+        <label class="ctl">Gênero<select id="lg-tipo"><option value="informativo">Informativo</option><option value="tecnico">Técnico</option><option value="opinativo">Opinativo</option><option value="narrativo">Narrativo (ficção)</option></select></label>
+        <label class="ctl">Tamanho<select id="lg-pal"><option value="300">300 palavras</option><option value="450" selected>450 palavras</option><option value="600">600 palavras</option><option value="900">900 palavras</option><option value="1200">1.200 palavras</option></select></label>
+        <label class="ctl">Dificuldade<select id="lg-nivel"><option value="facil">Fácil</option><option value="medio" selected>Média</option><option value="denso">Densa</option></select></label>
+      </div>
+      <div class="row"><button class="btn primary">Gerar texto e questionário</button></div>
+      <p class="note">Textos escritos por IA podem ter erros factuais. As perguntas cobram só o que está no texto.</p>
+    </form>
+    <form class="panel" id="lb-add">
+      <h2>Cadastrar meu texto</h2>
+      <label class="ctl">Título<input type="text" id="la-title" maxlength="120" required></label>
+      <label class="ctl">Texto<textarea id="la-body" required placeholder="Cole o texto aqui. Separe os parágrafos com uma linha em branco."></textarea></label>
+      <label class="ctl">Ou carregue um arquivo .txt ou .md<input type="file" id="la-file" accept=".txt,.md,text/plain"></label>
+      <label class="ctl chk"><input type="checkbox" id="la-quiz" checked>Gerar questionário com IA</label>
+      <div class="row"><button class="btn primary">Salvar texto</button><span class="note" id="la-count"></span></div>
+    </form>
+  </div>
+  <div class="row"><span class="fb" id="lb-msg" role="status"></span><button class="btn" id="lb-go" type="button" hidden>Testar agora</button></div>
+  <h2>Textos cadastrados</h2>
+  <div class="tablewrap"><table id="lb-table"></table></div>
+</section>
+
+<!-- HISTÓRICO -->
+<section class="view" id="v-historico" hidden>
+  <h1>Histórico</h1>
+  <p class="lead">Os resultados ficam no arquivo <span class="mono">data/resultados.json</span>, dentro da pasta do projeto.</p>
+  <div class="tablewrap"><table id="hs-table"></table></div>
+  <div class="row"><button class="btn danger" id="hs-clear">Apagar histórico</button>
+    <span id="hs-confirm" class="row" hidden>Apagar todos os resultados? <button class="btn danger" id="hs-yes">Sim, apagar</button><button class="btn" id="hs-no">Cancelar</button></span></div>
+</section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem('sacada_'+k);return v?JSON.parse(v):d}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('sacada_'+k,JSON.stringify(v))}catch(e){}}};
+let results=[],pendingTest=null;
+async function api(method,url,body){const r=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+  let d=null;try{d=await r.json()}catch(e){}
+  if(!r.ok)throw new Error(d&&d.error||'Erro '+r.status+' no servidor.');return d}
+function logResult(ex,data){const r=Object.assign({ex,t:Date.now()},data);results.push(r);api('POST','/api/resultados',r).catch(()=>{})}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Math.round(n).toLocaleString('pt-BR');
+const sec=n=>n.toFixed(1).replace('.',',')+' s';
+const rand=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const wordsOf=s=>s.trim().split(/\s+/).filter(Boolean);
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+const EXN={teste:'Teste',guia:'Guia visual',rsvp:'RSVP',schulte:'Schulte',flash:'Flash',periferia:'Periferia',busca:'Busca'};
+
+let TEXTS=[],AI={configured:false,model:""};
+
+function getText(id){return TEXTS.find(t=>t.id===id)||TEXTS[0]||{id:'',title:'',body:'Nenhum texto cadastrado. Abra a Biblioteca e cadastre ou gere um texto.',qs:null,words:11}}
+function testCount(){const c={};results.forEach(r=>{if(r.ex==='teste')c[r.text]=(c[r.text]||0)+1});return c}
+function fillSelects(){const cnt=testCount();
+  $$('.textsel').forEach(s=>{const v=s.value,isT=s.id==='ts-text';s.innerHTML='';
+    TEXTS.forEach(t=>{let l=t.title+' ('+t.words+' palavras)';if(isT)l+=!t.qs?' · sem questionário':cnt[t.id]?' · testado '+cnt[t.id]+'×':' · inédito';s.add(new Option(l,t.id))});
+    if(v&&TEXTS.some(t=>t.id===v))s.value=v;
+    else if(isT){const nx=TEXTS.find(t=>t.qs&&!cnt[t.id])||TEXTS.find(t=>t.qs);if(nx)s.value=nx.id}})}
+function paragraphs(body,box,spans){box.innerHTML='';body.trim().split(/\n\s*\n/).forEach(p=>{const el=document.createElement('p');
+  if(spans){wordsOf(p).forEach(w=>{const s=document.createElement('span');s.textContent=w;el.append(s,' ');spans.push(s)})}else el.textContent=p.replace(/\s+/g,' ');
+  box.append(el)})}
+
+/* ---------- plano e painel ---------- */
+function baseline(){const t=results.filter(r=>r.ex==='teste');if(!t.length)return null;
+  const last=t[t.length-1];const week=Math.min(3,Math.floor((Date.now()-t[0].t)/6048e5));
+  const r10=n=>Math.round(n/10)*10;
+  return {last,week,guia:r10(last.ppm*[1.15,1.25,1.35,1.45][week]),rsvp:r10(last.ppm*[1.3,1.45,1.6,1.75][week])}}
+function renderDash(){
+  const b=baseline(),tests=results.filter(r=>r.ex==='teste');
+  $('#st-ppm').textContent=b?fmt(b.last.ppm):'–';
+  $('#st-comp').textContent=b&&b.last.comp!=null?Math.round(b.last.comp*100)+'%':'–';
+  $('#st-ef').textContent=b&&b.last.comp!=null?fmt(b.last.ppm*b.last.comp):'–';
+  const days=new Set(results.map(r=>dayKey(r.t)));let s=0,d=new Date();
+  if(!days.has(dayKey(d)))d.setDate(d.getDate()-1);
+  while(days.has(dayKey(d))){s++;d.setDate(d.getDate()-1)}
+  $('#st-streak').textContent=s;
+  $('#plan-note').textContent=b?'Semana '+(b.week+1)+' do plano. Alvos calculados sobre sua base de '+fmt(b.last.ppm)+' ppm.':'Faça o teste primeiro. Ele define sua linha de base e as velocidades-alvo dos exercícios.';
+  const today=dayKey(Date.now()),done=new Set(results.filter(r=>dayKey(r.t)===today).map(r=>r.ex));
+  const steps=[['schulte','Tabela de Schulte','Aquecimento da atenção visual. Duas ou três tabelas.','2 min'],
+    ['periferia','Periferia','Uma série de 12 rodadas.','2 min'],
+    ['flash','Flash','Palavras ou frases, 10 rodadas.','2 min'],
+    ['guia','Guia visual',b?'Alvo de hoje: '+b.guia+' ppm.':'O exercício principal. Um texto inteiro.','5 min'],
+    ['rsvp','RSVP',b?'Alvo de hoje: '+b.rsvp+' ppm.':'Sobrecarga de ritmo. Um texto.','3 min'],
+    ['teste','Teste com compreensão',tests.length?'Uma vez por semana, com texto novo.':'Comece por aqui.','4 min']];
+  if(!tests.length)steps.unshift(steps.pop());
+  $('#steps').innerHTML=steps.map(x=>'<li class="'+(done.has(x[0])?'done':'')+'"><span class="tick"></span><span><a href="#'+x[0]+'">'+x[1]+'</a><small>'+x[2]+'</small></span><span class="min">'+x[3]+'</span></li>').join('');
+  renderChart(tests);
+}
+function renderChart(tests){
+  const el=$('#chart');const W=Math.max(280,el.clientWidth||560),H=230,L=40,R=44,T=14,B=26;
+  const maxV=Math.max(400,...tests.map(t=>t.ppm));const yMax=Math.ceil(maxV*1.1/100)*100;
+  const y=v=>T+(H-T-B)*(1-v/yMax),x=i=>tests.length<2?L+(W-L-R)/2:L+(W-L-R)*i/(tests.length-1);
+  let s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolução da velocidade de leitura nos testes">';
+  s+='<rect x="'+L+'" y="'+y(300)+'" width="'+(W-L-R)+'" height="'+(y(200)-y(300))+'" fill="var(--band)"/>';
+  for(let v=0;v<=yMax;v+=100){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)" stroke-width="1"/><text x="'+(L-8)+'" y="'+(y(v)+4)+'" text-anchor="end" fill="var(--muted)" style="font:11px var(--mono)">'+v+'</text>'}
+  s+='<text x="'+(L+8)+'" y="'+(y(300)+15)+'" fill="var(--muted)" style="font:11.5px var(--ui)">faixa típica de adulto, 200 a 300 ppm</text>';
+  if(!tests.length){s+='<text x="'+(L+(W-L-R)/2)+'" y="'+(y(100)+4)+'" text-anchor="middle" fill="var(--ink)" style="font:600 14px var(--ui)">Seu primeiro teste aparece aqui</text>'}
+  else{
+    const line=(f,st)=>{const pts=tests.map((t,i)=>f(t)==null?null:[x(i),y(f(t))]).filter(Boolean);if(!pts.length)return '';
+      return (pts.length>1?'<path d="M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')+'" fill="none" '+st+'/>':'')+pts.map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--surface)" '+st.replace(/stroke-dasharray="[^"]*"/,'')+'/>').join('')};
+    s+=line(t=>t.comp!=null?t.ppm*t.comp:null,'stroke="var(--good)" stroke-width="2" stroke-dasharray="5 4"');
+    s+=line(t=>t.ppm,'stroke="var(--accent)" stroke-width="2"');
+    const l=tests[tests.length-1];
+    s+='<text x="'+(x(tests.length-1)+8)+'" y="'+(y(l.ppm)+4)+'" fill="var(--ink)" style="font:600 12px var(--mono)">'+fmt(l.ppm)+'</text>';
+    if(l.comp!=null&&Math.abs(y(l.ppm)-y(l.ppm*l.comp))>13)s+='<text x="'+(x(tests.length-1)+8)+'" y="'+(y(l.ppm*l.comp)+4)+'" fill="var(--muted)" style="font:12px var(--mono)">'+fmt(l.ppm*l.comp)+'</text>';
+    s+='<text x="'+L+'" y="'+(H-6)+'" fill="var(--muted)" style="font:11px var(--ui)">'+new Date(tests[0].t).toLocaleDateString('pt-BR')+'</text>';
+    if(tests.length>1)s+='<text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end" fill="var(--muted)" style="font:11px var(--ui)">'+new Date(l.t).toLocaleDateString('pt-BR')+'</text>';
+  }
+  el.innerHTML=s+'</svg>';
+}
+
+/* ---------- teste ---------- */
+const TS={};
+function tsReset(){$('#ts-controls').hidden=false;$('#ts-paper').hidden=true;$('#ts-doneRow').hidden=true;$('#ts-quiz').hidden=true}
+$('#ts-start').onclick=()=>{TS.text=getText($('#ts-text').value);
+  TS.qs=TS.text.qs&&TS.text.qs.length?shuffle(TS.text.qs).slice(0,5).map(q=>{const ord=shuffle(q.o.map((_,i)=>i));return {q:q.q,o:ord.map(i=>q.o[i]),a:ord.indexOf(q.a)}}):null;
+  paragraphs(TS.text.body,$('#ts-body'));
+  $('#ts-controls').hidden=true;$('#ts-result').hidden=true;$('#ts-quiz').hidden=true;$('#ts-paper').hidden=false;$('#ts-doneRow').hidden=false;TS.t0=performance.now()};
+$('#ts-done').onclick=()=>{const mins=(performance.now()-TS.t0)/60000;TS.ppm=wordsOf(TS.text.body).length/mins;TS.secs=mins*60;
+  $('#ts-paper').hidden=true;$('#ts-doneRow').hidden=true;
+  if(!TS.qs)return tsFinish(null);
+  const f=$('#ts-quiz');f.innerHTML='<h2>Perguntas</h2><p class="note">Responda de memória.</p>'+TS.qs.map((q,i)=>'<fieldset><legend>'+(i+1)+'. '+esc(q.q)+'</legend>'+q.o.map((o,j)=>'<label><input type="radio" name="q'+i+'" id="ts-q'+i+'-'+j+'" value="'+j+'">'+esc(o)+'</label>').join('')+'</fieldset>').join('')+'<div class="row"><button class="btn primary">Ver resultado</button><span class="note" id="ts-warn"></span></div>';
+  f.hidden=false};
+$('#ts-quiz').onsubmit=e=>{e.preventDefault();const f=e.target;let hit=0;
+  if(TS.qs.some((q,i)=>!f.querySelector('input[name=q'+i+']:checked'))){$('#ts-warn').textContent='Responda todas as perguntas.';return}
+  TS.qs.forEach((q,i)=>{const c=f.querySelector('input[name=q'+i+']:checked');if(+c.value===q.a)hit++;else c.parentElement.classList.add('wrong');
+    f.querySelector('#ts-q'+i+'-'+q.a).parentElement.classList.add('right')});
+  f.querySelectorAll('input,button').forEach(x=>x.disabled=true);tsFinish(hit/TS.qs.length)};
+function tsFinish(comp){logResult('teste',{ppm:Math.round(TS.ppm),comp,text:TS.text.id});
+  let msg;if(comp==null)msg='Texto sem questionário: só a velocidade foi medida. Gere as perguntas na Biblioteca.';
+  else if(comp<.6)msg='Compreensão abaixo de 60%. Você passou do seu limite neste texto; nos treinos, não suba a velocidade esta semana.';
+  else if(comp<.85)msg='Compreensão adequada. Mantenha os alvos do plano.';
+  else msg='Compreensão alta. Há folga para forçar o ritmo nos treinos.';
+  $('#ts-result').innerHTML='<strong>'+fmt(TS.ppm)+' ppm'+(comp!=null?' · '+Math.round(comp*100)+'% de compreensão · '+fmt(TS.ppm*comp)+' ppm efetivos':'')+'</strong><span>'+wordsOf(TS.text.body).length+' palavras em '+sec(TS.secs)+'. '+msg+'</span><div class="row"><button class="btn" id="ts-again">Outro texto</button><a class="btn" href="#inicio" style="text-decoration:none">Ver painel</a></div>';
+  $('#ts-result').hidden=false;$('#ts-again').onclick=()=>{fillSelects();tsReset();$('#ts-result').hidden=true};applyTargets()}
+
+/* ---------- guia ---------- */
+const G={i:0,spans:[],timer:null,playing:false,done:false};
+function gdLoad(){gdStop();G.spans=[];G.i=0;G.done=false;paragraphs(getText($('#gd-text').value).body,$('#gd-body'),G.spans);$('#guia-box').scrollTop=0;$('#gd-bar').style.width='0';$('#gd-result').hidden=true;$('#gd-play').textContent='Iniciar'}
+function gdStop(){clearTimeout(G.timer);G.playing=false;if(!G.done)$('#gd-play').textContent=G.i?'Continuar':'Iniciar'}
+function gdTick(){const n=+$('#gd-n').value;$$('#gd-body .on').forEach(s=>{s.classList.remove('on');s.classList.add('read')});
+  if(G.i>=G.spans.length){G.done=true;G.playing=false;$('#gd-play').textContent='Iniciar';logResult('guia',{ppm:+$('#gd-ppm').value,n,words:G.spans.length});
+    $('#gd-result').innerHTML='<strong>'+G.spans.length+' palavras a '+$('#gd-ppm').value+' ppm</strong><span>Recapitule de memória os pontos principais. Se conseguir, suba 20 ppm na próxima; se não, repita neste ritmo.</span>';$('#gd-result').hidden=false;return}
+  const g=G.spans.slice(G.i,G.i+n);g.forEach(s=>s.classList.add('on'));const box=$('#guia-box');box.scrollTop=g[0].offsetTop-box.clientHeight*.4;
+  G.i+=g.length;$('#gd-bar').style.width=(100*G.i/G.spans.length)+'%';
+  let d=60000/+$('#gd-ppm').value*g.length;if(/[.!?]["”)]?$/.test(g[g.length-1].textContent))d*=1.35;
+  G.timer=setTimeout(gdTick,d)}
+function gdToggle(){if(G.playing)return gdStop();if(G.done)gdLoad();G.playing=true;$('#gd-play').textContent='Pausar';gdTick()}
+$('#gd-play').onclick=gdToggle;$('#gd-reset').onclick=gdLoad;$('#gd-text').onchange=gdLoad;
+$('#gd-erase').onchange=e=>$('#guia-box').classList.toggle('erase',e.target.checked);
+
+/* ---------- rsvp ---------- */
+const R={i:0,tokens:[],timer:null,playing:false,done:false,t0:0,elapsed:0};
+function rsDraw(g){const st=$('#rs-stage'),s=g.join(' ');st.classList.toggle('multi',g.length>1);
+  let p;if(g.length>1)p=Math.floor(s.length/2);else{const l=s.replace(/[^\p{L}\p{N}]/gu,'').length;p=l<=1?0:l<=5?1:l<=9?2:l<=13?3:4;p=Math.min(p,s.length-1)}
+  st.children[0].textContent=s.slice(0,p);st.children[1].textContent=s.charAt(p);st.children[2].textContent=s.slice(p+1)}
+function rsLoad(){rsStop();R.tokens=wordsOf(getText($('#rs-text').value).body);R.i=0;R.done=false;R.elapsed=0;rsDraw(['pronto']);$('#rs-bar').style.width='0';$('#rs-result').hidden=true;$('#rs-play').textContent='Iniciar'}
+function rsStop(){clearTimeout(R.timer);if(R.playing)R.elapsed+=performance.now()-R.t0;R.playing=false;if(!R.done)$('#rs-play').textContent=R.i?'Continuar':'Iniciar'}
+function rsTick(){if(R.i>=R.tokens.length){R.elapsed+=performance.now()-R.t0;R.playing=false;R.done=true;$('#rs-play').textContent='Iniciar';
+    const real=R.tokens.length/(R.elapsed/60000);logResult('rsvp',{ppm:+$('#rs-ppm').value,real:Math.round(real),words:R.tokens.length,ramp:$('#rs-ramp').checked});
+    $('#rs-result').innerHTML='<strong>'+fmt(real)+' ppm reais</strong><span>'+R.tokens.length+' palavras em '+sec(R.elapsed/1000)+', já contando as pausas de pontuação. Diga em voz alta sobre o que era o texto. Se não souber, reduza 40 ppm.</span>';$('#rs-result').hidden=false;return}
+  const n=+$('#rs-n').value,g=R.tokens.slice(R.i,R.i+n);rsDraw(g);R.i+=g.length;$('#rs-bar').style.width=(100*R.i/R.tokens.length)+'%';
+  let ppm=+$('#rs-ppm').value;if($('#rs-ramp').checked)ppm*=1+.5*R.i/R.tokens.length;
+  let d=60000/ppm*g.length;const last=g[g.length-1];
+  if(/[.!?]["”)]?$/.test(last))d*=1.9;else if(/[,;:]$/.test(last))d*=1.4;if(g.length===1&&last.length>9)d*=1.2;
+  R.timer=setTimeout(rsTick,d)}
+function rsToggle(){if(R.playing)return rsStop();if(R.done)rsLoad();R.playing=true;R.t0=performance.now();$('#rs-play').textContent='Pausar';rsTick()}
+$('#rs-play').onclick=rsToggle;$('#rs-reset').onclick=rsLoad;$('#rs-text').onchange=rsLoad;
+
+/* ---------- schulte ---------- */
+const S={next:1,n:5,t0:0,int:null,errs:0,on:false};
+function scBest(){const n=+$('#sc-n').value,b=results.filter(r=>r.ex==='schulte'&&r.n===n).map(r=>r.time);$('#sc-best').textContent=b.length?'Seu melhor em '+n+' × '+n+': '+sec(Math.min(...b)):''}
+function scStop(){clearInterval(S.int);S.on=false}
+function scStart(){scStop();S.n=+$('#sc-n').value;S.next=1;S.errs=0;S.on=true;$('#sc-result').hidden=true;
+  const g=$('#sch-grid');g.style.gridTemplateColumns='repeat('+S.n+',1fr)';g.innerHTML='';
+  shuffle(Array.from({length:S.n*S.n},(_,i)=>i+1)).forEach(v=>{const b=document.createElement('button');b.textContent=v;b.onclick=()=>scClick(b,v);g.append(b)});
+  S.t0=performance.now();S.int=setInterval(()=>$('#sc-timer').textContent=sec((performance.now()-S.t0)/1000),100);scBest()}
+function scClick(b,v){if(!S.on)return;if(v===S.next){b.classList.add('hit');S.next++;
+    if(S.next>S.n*S.n){const t=(performance.now()-S.t0)/1000;scStop();$('#sc-timer').textContent=sec(t);logResult('schulte',{n:S.n,time:+t.toFixed(1),errs:S.errs});
+      $('#sc-result').innerHTML='<strong>'+sec(t)+'</strong><span>'+S.errs+' erro(s). Referência para 5 × 5: abaixo de 30 s é bom, abaixo de 20 s é muito bom.</span>';$('#sc-result').hidden=false;scBest()}}
+  else{S.errs++;b.classList.add('miss');setTimeout(()=>b.classList.remove('miss'),220)}}
+$('#sc-start').onclick=scStart;$('#sc-n').onchange=scStart;
+
+/* ---------- flash ---------- */
+const WORDS=[['casa','livro','tempo','mundo','porta','verde','noite','campo','papel','festa','linha','ponte','sonho','vento','chuva','pedra','letra','fonte'],
+ ['janela','cidade','caminho','palavra','memória','viagem','leitura','pintura','estrada','relógio','coragem','projeto','sistema','músico','figura','destino'],
+ ['montanha','horizonte','floresta','silêncio','aventura','conversa','elefante','mensagem','trabalho','problema','ambiente','harmonia','primavera','paisagem'],
+ ['biblioteca','arquitetura','compreensão','velocidade','conhecimento','experiência','universidade','temperatura','concentração','aprendizagem','desenvolvimento']];
+const PHRASES=[['céu azul','porta aberta','mar calmo','café quente','rua vazia','livro novo','noite fria','sol forte'],
+ ['a casa amarela','um dia longo','o trem partiu','chuva de verão','pão com manteiga','luz da manhã','fim de semana','sala de aula'],
+ ['o vento mudou cedo','ela chegou antes dele','a ponte sobre o rio','um copo de água','o livro está aberto','três linhas por vez','a rua ficou vazia'],
+ ['o gato dorme no sofá','a chuva caiu sem parar','ele leu a carta devagar','o ônibus saiu sem atraso','a aula começa às oito'],
+ ['o menino correu até a praça','ela guardou o livro na estante','o barco voltou antes da noite','a luz da sala ficou acesa']];
+const F={round:0,level:0,hits:0,best:0,cur:'',timers:[],on:false,last:''};
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+function flStop(){F.timers.forEach(clearTimeout);F.timers=[];F.on=false;$('#fl-in').disabled=true;$('#fl-ok').disabled=true}
+function flGen(){const m=$('#fl-mode').value;if(m==='digitos'){let s=''+(1+rand(9));for(let i=1;i<Math.min(9,3+F.level);i++)s+=rand(10);return s}
+  const pool=(m==='palavras'?WORDS:PHRASES);const g=pool[Math.min(pool.length-1,F.level)];let w;do{w=g[rand(g.length)]}while(w===F.last);F.last=w;return w}
+function flNext(){if(F.round>=10){flStop();const m=$('#fl-mode').value;logResult('flash',{mode:m,dur:+$('#fl-dur').value,hits:F.hits,best:F.best});
+    $('#fl-disp').textContent='+';$('#fl-result').innerHTML='<strong>'+F.hits+' de 10</strong><span>Nível máximo com acerto: '+F.best+'. Com 8 ou mais acertos, reduza a exposição ou passe de palavras para frases.</span>';$('#fl-result').hidden=false;return}
+  F.round++;$('#fl-count').textContent=F.round+'/10';F.cur=flGen();const inp=$('#fl-in');inp.value='';inp.disabled=true;$('#fl-ok').disabled=true;$('#fl-disp').textContent='+';
+  F.timers.push(setTimeout(()=>{$('#fl-disp').textContent=F.cur;F.timers.push(setTimeout(()=>{$('#fl-disp').textContent=F.cur.replace(/\S/g,'#');inp.disabled=false;$('#fl-ok').disabled=false;inp.focus()},+$('#fl-dur').value))},800))}
+$('#fl-start').onclick=()=>{flStop();F.round=0;F.level=0;F.hits=0;F.best=0;F.on=true;$('#fl-result').hidden=true;$('#fl-fb').textContent='';$('#fl-in').inputMode=$('#fl-mode').value==='digitos'?'numeric':'text';flNext()};
+$('#fl-form').onsubmit=e=>{e.preventDefault();if(!F.on||$('#fl-in').disabled)return;const ok=norm($('#fl-in').value)===norm(F.cur);const fb=$('#fl-fb');
+  $('#fl-in').disabled=true;$('#fl-ok').disabled=true;$('#fl-disp').textContent=F.cur;
+  if(ok){F.hits++;F.level++;F.best=Math.max(F.best,F.level);fb.textContent='Certo';fb.className='fb ok'}else{F.level=Math.max(0,F.level-1);fb.textContent='Era: '+F.cur;fb.className='fb no'}
+  F.timers.push(setTimeout(flNext,1100))};
+
+/* ---------- periferia ---------- */
+const P={round:0,d:14,hits:0,maxD:0,same:false,wait:false,timers:[],on:false};
+function pfStop(){P.timers.forEach(clearTimeout);P.timers=[];P.on=false;P.wait=false;$('#pf-same').disabled=true;$('#pf-diff').disabled=true;$('#pf-l').textContent='';$('#pf-r').textContent=''}
+function pfNext(){if(P.round>=12){pfStop();logResult('periferia',{hits:P.hits,maxD:P.maxD});
+    $('#pf-result').innerHTML='<strong>'+P.hits+' de 12</strong><span>Maior afastamento com acerto: '+P.maxD+'% da largura para cada lado. Em tela maior, ou mais perto dela, o ângulo visual cresce e o exercício fica mais difícil.</span>';$('#pf-result').hidden=false;return}
+  P.round++;$('#pf-count').textContent=P.round+'/12';
+  P.timers.push(setTimeout(()=>{const A='BCDFGHJKLMNPRSTVXZ',len=P.d>30?3:2;let a='';for(let i=0;i<len;i++)a+=A[rand(A.length)];let b=a;P.same=Math.random()<.5;
+    if(!P.same){const k=rand(len);let c;do{c=A[rand(A.length)]}while(c===a[k]);b=a.slice(0,k)+c+a.slice(k+1)}
+    const l=$('#pf-l'),r=$('#pf-r');l.style.left=(50-P.d)+'%';r.style.left=(50+P.d)+'%';l.textContent=a;r.textContent=b;
+    P.timers.push(setTimeout(()=>{l.textContent='';r.textContent='';P.wait=true;$('#pf-same').disabled=false;$('#pf-diff').disabled=false},180))},800+rand(500)))}
+function pfAnswer(same){if(!P.on||!P.wait)return;P.wait=false;$('#pf-same').disabled=true;$('#pf-diff').disabled=true;const fb=$('#pf-fb');
+  if(same===P.same){P.hits++;P.maxD=Math.max(P.maxD,P.d);P.d=Math.min(42,P.d+4);fb.textContent='Certo';fb.className='fb ok'}
+  else{P.d=Math.max(8,P.d-4);fb.textContent=P.same?'Eram iguais':'Eram diferentes';fb.className='fb no'}
+  P.timers.push(setTimeout(pfNext,500))}
+$('#pf-start').onclick=()=>{pfStop();P.round=0;P.d=14;P.hits=0;P.maxD=0;P.on=true;$('#pf-result').hidden=true;$('#pf-fb').textContent='';pfNext()};
+$('#pf-same').onclick=()=>pfAnswer(true);$('#pf-diff').onclick=()=>pfAnswer(false);
+
+/* ---------- busca ---------- */
+const SETS=[['prato',['preto','parto','prata','porta','pacto','ponto','trapo','plano','pátio']],
+ ['conto',['canto','conta','tonto','ponto','corto','cinto','manto','conde','couro']],
+ ['linha',['lenha','minha','ninho','pinha','tinha','lixa','linho','vinha','lunar']],
+ ['carta',['corta','curta','casta','cesta','canta','certa','costa','farta','marca']],
+ ['mundo',['mando','fundo','mudou','muito','medo','manto','nunca','rumo','surdo']]];
+const B={found:0,n:0,errs:0,t0:0,int:null,on:false,target:''};
+function bsStop(){clearInterval(B.int);B.on=false}
+function bsStart(){bsStop();const [t,ds]=SETS[rand(SETS.length)];B.target=t;B.n=5+rand(4);B.found=0;B.errs=0;B.on=true;$('#bs-result').hidden=true;
+  const items=Array(B.n).fill(t);while(items.length<48)items.push(ds[rand(ds.length)]);
+  const g=$('#bs-grid');g.innerHTML='';shuffle(items).forEach(w=>{const b=document.createElement('button');b.textContent=w;b.onclick=()=>bsClick(b,w);g.append(b)});
+  bsInfo();B.t0=performance.now();B.int=setInterval(()=>$('#bs-timer').textContent=sec((performance.now()-B.t0)/1000),100)}
+function bsInfo(){$('#bs-info').innerHTML='Encontre <span class="target">'+B.target+'</span> <span class="mono">'+B.found+'/'+B.n+'</span>'}
+function bsClick(b,w){if(!B.on||b.classList.contains('found'))return;
+  if(w===B.target){b.classList.add('found');B.found++;bsInfo();if(B.found===B.n){const t=(performance.now()-B.t0)/1000;bsStop();$('#bs-timer').textContent=sec(t);
+      logResult('busca',{n:B.n,time:+t.toFixed(1),errs:B.errs});$('#bs-result').innerHTML='<strong>'+sec(t)+'</strong><span>'+B.n+' alvos entre 48 palavras, '+B.errs+' clique(s) errado(s). '+sec(t/B.n)+' por alvo.</span>';$('#bs-result').hidden=false}}
+  else{B.errs++;b.classList.add('miss');setTimeout(()=>b.classList.remove('miss'),300)}}
+$('#bs-start').onclick=bsStart;
+
+/* ---------- biblioteca ---------- */
+const LB={busy:false,del:null,go:null};
+const SRC={padrao:'texto inicial',manual:'cadastrado por você',ia:'gerado por IA'};
+async function loadTexts(){TEXTS=await api('GET','/api/textos');TEXTS.forEach(t=>t.words=wordsOf(t.body).length)}
+function lbMsg(t,cls,go){const m=$('#lb-msg');m.textContent=t||'';m.className='fb '+(cls||'');LB.go=go||null;$('#lb-go').hidden=!go}
+function goTest(id){pendingTest=id;location.hash='#teste'}
+function laCount(){const n=wordsOf($('#la-body').value).length;$('#la-count').textContent=n?n+' palavras'+(n<80?' (mínimo de 80)':''):''}
+function renderLib(){
+  $('#lb-ai').innerHTML=AI.configured?'<i class="dot on"></i>IA ativa. Modelo: <span class="mono">'+esc(AI.model)+'</span>'
+    :'<i class="dot"></i>IA desativada. Preencha <span class="mono">OPENROUTER_API_KEY</span> no arquivo <span class="mono">.env</span> e reinicie o servidor.';
+  const cnt=testCount(),off=LB.busy?' disabled':'',aoff=(LB.busy||!AI.configured)?' disabled':'';
+  $('#lb-table').innerHTML='<tr><th>Texto</th><th>Palavras</th><th>Questionário</th><th>Testes</th><th>Ações</th></tr>'+(TEXTS.length?TEXTS.slice().reverse().map(t=>
+    '<tr><td><b>'+esc(t.title)+'</b><br><span class="note">'+(SRC[t.source]||'')+'</span></td><td class="mono">'+t.words+'</td><td>'+(t.qs?t.qs.length+' perguntas':'<span class="no">sem questionário</span>')+'</td><td class="mono">'+(cnt[t.id]||0)+'</td>'+
+    '<td><div class="row acts" data-id="'+esc(t.id)+'"><button class="btn sm" data-act="test"'+off+'>Testar</button><button class="btn sm" data-act="quiz"'+aoff+'>'+(t.qs?'Refazer perguntas':'Gerar questionário')+'</button><button class="btn sm danger" data-act="del"'+off+'>'+(LB.del===t.id?'Confirmar exclusão':'Excluir')+'</button></div></td></tr>').join('')
+    :'<tr><td colspan="5">Nenhum texto cadastrado.</td></tr>');
+  $$('#lb-gen button').forEach(b=>b.disabled=LB.busy||!AI.configured);
+  $$('#lb-add button').forEach(b=>b.disabled=LB.busy);
+  $('#la-quiz').disabled=!AI.configured;if(!AI.configured)$('#la-quiz').checked=false}
+async function lbRun(msg,fn){if(LB.busy)return;LB.busy=true;LB.del=null;lbMsg(msg,'wait');renderLib();
+  try{await fn()}catch(e){lbMsg(e.message,'no')}
+  LB.busy=false;fillSelects();renderLib()}
+$('#lb-gen').onsubmit=e=>{e.preventDefault();lbRun('Escrevendo o texto e as perguntas. Pode levar até um minuto.',async()=>{
+  const r=await api('POST','/api/textos/gerar',{tema:$('#lg-tema').value,tipo:$('#lg-tipo').value,palavras:+$('#lg-pal').value,nivel:$('#lg-nivel').value});
+  await loadTexts();lbMsg('Texto criado: "'+r.text.title+'", com '+r.text.qs.length+' perguntas.','ok',r.text.id)})};
+$('#lb-add').onsubmit=e=>{e.preventDefault();const quiz=$('#la-quiz').checked;lbRun(quiz?'Salvando e gerando o questionário. Pode levar até um minuto.':'Salvando.',async()=>{
+  const r=await api('POST','/api/textos',{title:$('#la-title').value,body:$('#la-body').value,quiz});
+  await loadTexts();$('#la-title').value='';$('#la-body').value='';$('#la-file').value='';laCount();
+  if(r.warning)lbMsg(r.warning,'no');else lbMsg('Texto salvo'+(r.text.qs?' com '+r.text.qs.length+' perguntas.':' sem questionário.'),'ok',r.text.id)})};
+$('#la-body').oninput=laCount;
+$('#la-file').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{$('#la-body').value=rd.result;if(!$('#la-title').value)$('#la-title').value=f.name.replace(/\.[^.]+$/,'');laCount()};rd.readAsText(f)};
+$('#lb-go').onclick=()=>goTest(LB.go);
+$('#lb-table').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b)return;const id=b.parentElement.dataset.id,act=b.dataset.act;
+  if(act==='test')return goTest(id);
+  if(act==='del'){if(LB.del!==id){LB.del=id;return renderLib()}
+    return lbRun('Excluindo.',async()=>{await api('DELETE','/api/textos/'+id);await loadTexts();lbMsg('Texto excluído.','ok')})}
+  if(act==='quiz')lbRun('Gerando as perguntas. Pode levar até um minuto.',async()=>{const r=await api('POST','/api/textos/'+id+'/questionario');await loadTexts();lbMsg('Questionário pronto: '+r.text.qs.length+' perguntas.','ok',id)})};
+
+/* ---------- histórico ---------- */
+function summary(r){switch(r.ex){
+  case 'teste':return fmt(r.ppm)+' ppm'+(r.comp!=null?' · '+Math.round(r.comp*100)+'% · '+fmt(r.ppm*r.comp)+' efetivos':'');
+  case 'guia':return r.ppm+' ppm · grupos de '+r.n+' · '+r.words+' palavras';
+  case 'rsvp':return r.ppm+' ppm nominais · '+r.real+' reais'+(r.ramp?' · progressivo':'');
+  case 'schulte':return r.n+' × '+r.n+' em '+sec(r.time)+' · '+r.errs+' erro(s)';
+  case 'flash':return r.mode+' · '+r.hits+'/10 · '+r.dur+' ms';
+  case 'periferia':return r.hits+'/12 · alcance '+r.maxD+'%';
+  case 'busca':return r.n+' alvos em '+sec(r.time)+' · '+r.errs+' erro(s)'}return ''}
+function renderHist(){const rows=results.slice(-80).reverse();
+  $('#hs-table').innerHTML='<tr><th>Data</th><th>Exercício</th><th>Resultado</th></tr>'+(rows.length?rows.map(r=>'<tr><td class="mono">'+new Date(r.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+EXN[r.ex]+'</td><td>'+summary(r)+'</td></tr>').join(''):'<tr><td colspan="3">Nenhum resultado ainda. Cada exercício concluído entra aqui.</td></tr>');
+  $('#hs-confirm').hidden=true;$('#hs-clear').hidden=!rows.length}
+$('#hs-clear').onclick=()=>{$('#hs-confirm').hidden=false;$('#hs-clear').hidden=true};
+$('#hs-no').onclick=renderHist;$('#hs-yes').onclick=async()=>{try{await api('DELETE','/api/resultados');results=[]}catch(e){}fillSelects();renderHist()};
+
+/* ---------- controles, rotas, teclado ---------- */
+function bindRange(id){const r=$('#'+id),o=$('#'+id+'-o');const f=()=>o.textContent=r.value+' ppm';r.oninput=f;f()}
+function applyTargets(){const b=baseline();if(!b)return;$('#gd-ppm').value=b.guia;$('#rs-ppm').value=b.rsvp;bindRange('gd-ppm');bindRange('rs-ppm')}
+const VIEWS=['inicio','fundamentos','teste','guia','rsvp','schulte','flash','periferia','busca','biblioteca','historico'];let cur='inicio';
+function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h='inicio';cur=h;
+  gdStop();rsStop();scStop();flStop();pfStop();bsStop();
+  VIEWS.forEach(v=>$('#v-'+v).hidden=v!==h);
+  $$('#nav a').forEach(a=>a.getAttribute('href')==='#'+h?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+  if(h==='inicio')renderDash();if(h==='historico')renderHist();if(h==='teste'){fillSelects();if(pendingTest){$('#ts-text').value=pendingTest;pendingTest=null}tsReset();$('#ts-result').hidden=true}
+  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scStart();if(h==='busca')bsStart();if(h==='biblioteca'){LB.del=null;renderLib()}
+  window.scrollTo(0,0)}
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT|BUTTON|A/.test(e.target.tagName))return;
+  if(e.code==='Space'&&(cur==='rsvp'||cur==='guia')){e.preventDefault();cur==='rsvp'?rsToggle():gdToggle()}
+  if(cur==='rsvp'&&(e.code==='ArrowUp'||e.code==='ArrowDown')){e.preventDefault();const r=$('#rs-ppm');r.value=+r.value+(e.code==='ArrowUp'?10:-10);r.oninput()}
+  if(cur==='periferia'){if(e.code==='ArrowLeft')pfAnswer(true);if(e.code==='ArrowRight')pfAnswer(false)}});
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(cur==='inicio')renderChart(results.filter(r=>r.ex==='teste'))},150)});
+window.addEventListener('hashchange',route);
+function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('sacada_theme',t)}catch(e){}$('#theme').textContent=t==='dark'?'Tema claro':'Tema escuro'}
+$('#theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+setTheme(document.documentElement.dataset.theme||'light');
+(async function boot(){
+  try{[AI,results]=await Promise.all([api('GET','/api/status'),api('GET','/api/resultados')]);await loadTexts()}
+  catch(e){const b=$('#boot-err');b.textContent='O servidor não respondeu. Inicie-o com "npm start" na pasta do projeto e recarregue a página.';b.hidden=false}
+  fillSelects();bindRange('gd-ppm');bindRange('rs-ppm');applyTargets();route()})();
+</script>
+</body>
+</html>

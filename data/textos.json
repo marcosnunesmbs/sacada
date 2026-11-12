@@ -1,0 +1,363 @@
+[
+ {
+  "id": "olhos",
+  "title": "Como os olhos leem",
+  "body": "Quando lemos, temos a impressão de que os olhos deslizam suavemente pela linha. Não é o que acontece. O olhar avança em pequenos saltos, chamados sacadas, e para por um instante entre um salto e outro. Essas paradas são as fixações, e é somente durante elas que o cérebro recebe informação útil do texto. Cada fixação dura, em média, entre 200 e 250 milésimos de segundo, e cada sacada cobre de sete a nove letras.\n\nA área que enxergamos com nitidez é pequena. A fóvea, região central da retina, cobre apenas cerca de dois graus do campo visual, o equivalente a poucas letras de cada lado do ponto fixado. Fora dela, a nitidez cai rapidamente. Em línguas escritas da esquerda para a direita, o leitor aproveita informação de três ou quatro letras à esquerda da fixação e de até quatorze ou quinze à direita, mas só identifica palavras inteiras em um trecho bem menor.\n\nNem todo salto vai para a frente. Entre dez e quinze por cento das sacadas de um leitor adulto são regressões, isto é, retornos a um ponto anterior do texto. Parte delas corrige um pouso mal calculado do olhar. Outra parte acontece quando a frase não fez sentido e precisa ser relida. Experimentos que impediram os leitores de voltar mostraram queda na compreensão, o que indica que as regressões têm função.\n\nLeitores habilidosos não possuem olhos mais rápidos. Eles fazem fixações mais curtas, saltos um pouco mais longos e menos regressões porque reconhecem as palavras com mais facilidade. A velocidade, portanto, é consequência do domínio da língua e do assunto, e muito menos de alguma ginástica ocular. Um adulto com formação superior lê, em silêncio, algo entre 200 e 300 palavras por minuto, e textos difíceis reduzem esse ritmo em qualquer pessoa.",
+  "qs": [
+   {
+    "q": "Em que momento o cérebro recebe informação útil do texto?",
+    "o": [
+     "Durante as sacadas",
+     "Durante as fixações",
+     "Durante as regressões",
+     "O tempo todo, de forma contínua"
+    ],
+    "a": 1
+   },
+   {
+    "q": "Quanto dura, em média, uma fixação?",
+    "o": [
+     "Entre 20 e 50 milésimos de segundo",
+     "Cerca de um segundo",
+     "Entre 200 e 250 milésimos de segundo",
+     "Entre 500 e 700 milésimos de segundo"
+    ],
+    "a": 2
+   },
+   {
+    "q": "Que proporção das sacadas de um adulto são regressões?",
+    "o": [
+     "Entre 10% e 15%",
+     "Menos de 1%",
+     "Cerca de metade",
+     "Entre 30% e 40%"
+    ],
+    "a": 0
+   },
+   {
+    "q": "O que aconteceu nos experimentos que impediram os leitores de voltar no texto?",
+    "o": [
+     "A velocidade dobrou sem perdas",
+     "Nada mudou",
+     "Os leitores passaram a fazer fixações mais longas",
+     "A compreensão caiu"
+    ],
+    "a": 3
+   },
+   {
+    "q": "Segundo o texto, por que leitores habilidosos são mais rápidos?",
+    "o": [
+     "Porque têm olhos que se movem mais depressa",
+     "Porque reconhecem as palavras com mais facilidade",
+     "Porque enxergam uma linha inteira por fixação",
+     "Porque eliminaram todas as regressões"
+    ],
+    "a": 1
+   }
+  ],
+  "source": "padrao",
+  "createdAt": 0
+ },
+ {
+  "id": "memoria",
+  "title": "A curva do esquecimento",
+  "body": "Em 1885, o psicólogo alemão Hermann Ebbinghaus publicou um estudo que usava a si mesmo como único participante. Ele decorava listas de sílabas sem sentido, como \"zof\" ou \"kel\", e media quanto tempo levava para reaprendê-las depois de intervalos variados. A escolha de sílabas sem significado era proposital: assim, nenhuma lembrança anterior ajudaria na tarefa.\n\nO resultado ficou conhecido como curva do esquecimento. A perda é rápida no começo e desacelera depois. Em cerca de vinte minutos, Ebbinghaus já havia perdido boa parte da economia de tempo no reaprendizado; depois de um dia, restava aproximadamente um terço; depois de um mês, cerca de um quinto. O que sobrevivia aos primeiros dias tendia a permanecer por muito tempo.\n\nEbbinghaus também observou algo que interessa a qualquer estudante. Repetições distribuídas ao longo de vários dias produziam lembranças mais duráveis que o mesmo número de repetições concentradas em uma única sessão. Esse fenômeno, hoje chamado de efeito de espaçamento, foi confirmado em centenas de experimentos com materiais muito diferentes das sílabas originais.\n\nOutra descoberta posterior completa o quadro. Tentar lembrar um conteúdo, em vez de apenas relê-lo, fortalece a memória de forma mais eficiente. Quem fecha o livro e se pergunta o que acabou de ler costuma reter mais do que quem passa os olhos pelo capítulo pela segunda vez, ainda que a releitura dê uma sensação maior de domínio.\n\nAs duas ideias se combinam bem. Revisar em intervalos crescentes, e sempre por meio de perguntas, exige menos horas do que estudar tudo na véspera. Para a leitura, a consequência é direta: ler depressa ajuda pouco se nada for lembrado depois. Uma pausa de um minuto para recapitular os pontos principais de um texto vale mais do que alguns segundos ganhos na velocidade.",
+  "qs": [
+   {
+    "q": "Quem foram os participantes do estudo de Ebbinghaus?",
+    "o": [
+     "Estudantes universitários alemães",
+     "Crianças em idade escolar",
+     "Apenas ele mesmo",
+     "Pacientes de um hospital"
+    ],
+    "a": 2
+   },
+   {
+    "q": "Por que ele usou sílabas sem sentido?",
+    "o": [
+     "Para que lembranças anteriores não ajudassem",
+     "Porque eram mais fáceis de decorar",
+     "Porque não havia livros disponíveis",
+     "Para testar a pronúncia"
+    ],
+    "a": 0
+   },
+   {
+    "q": "Qual é o formato da curva do esquecimento?",
+    "o": [
+     "Perda lenta no começo e rápida depois",
+     "Perda constante ao longo do tempo",
+     "Nenhuma perda no primeiro dia",
+     "Perda rápida no começo e mais lenta depois"
+    ],
+    "a": 3
+   },
+   {
+    "q": "O que é o efeito de espaçamento?",
+    "o": [
+     "Textos com mais espaço entre linhas são lembrados melhor",
+     "Repetições distribuídas em vários dias duram mais que repetições concentradas",
+     "Intervalos longos fazem esquecer tudo",
+     "Estudar na véspera é o método mais eficiente"
+    ],
+    "a": 1
+   },
+   {
+    "q": "Segundo o texto, o que fortalece mais a memória do que reler?",
+    "o": [
+     "Ler em voz alta",
+     "Sublinhar o texto",
+     "Tentar lembrar o conteúdo",
+     "Ler mais depressa"
+    ],
+    "a": 2
+   }
+  ],
+  "source": "padrao",
+  "createdAt": 0
+ },
+ {
+  "id": "dumont",
+  "title": "Santos Dumont e o 14-Bis",
+  "body": "Alberto Santos Dumont nasceu em 1873, em Minas Gerais, filho de um dos maiores produtores de café do país. Ainda jovem mudou-se para Paris, que na virada do século era o centro mundial da aeronáutica. Ali começou pelos balões e logo passou aos dirigíveis, aparelhos mais leves que o ar equipados com motor e leme.\n\nEm outubro de 1901, a bordo do dirigível número 6, ele partiu de Saint-Cloud, contornou a Torre Eiffel e voltou ao ponto de partida em cerca de meia hora. O feito lhe rendeu o Prêmio Deutsch, de cem mil francos. Santos Dumont distribuiu o dinheiro entre sua equipe e os pobres de Paris, gesto que ajudou a transformá-lo em celebridade.\n\nO passo seguinte foi o mais difícil: voar com um aparelho mais pesado que o ar. O resultado foi o 14-Bis, um avião de aparência estranha, com a cauda na frente e as asas formadas por células parecidas com pipas em caixa. Em 23 de outubro de 1906, no campo de Bagatelle, o aparelho decolou por seus próprios meios e percorreu cerca de sessenta metros diante de uma comissão oficial. Em 12 de novembro, voou 220 metros em pouco mais de 21 segundos, marca registrada como o primeiro recorde de aviação homologado no mundo.\n\nOs irmãos Wright haviam voado nos Estados Unidos em 1903, mas sem uma comissão oficial presente e com o auxílio de um trilho de lançamento para decolar. Por isso a discussão sobre a primazia dura até hoje.\n\nSantos Dumont nunca patenteou suas invenções. Os planos do Demoiselle, seu avião leve, foram publicados livremente para quem quisesse construí-lo. Também lhe é atribuída a popularização do relógio de pulso entre os homens: ele pediu ao amigo Louis Cartier um modelo que pudesse consultar sem tirar as mãos dos comandos.",
+  "qs": [
+   {
+    "q": "Em que cidade Santos Dumont desenvolveu seus aparelhos?",
+    "o": [
+     "Rio de Janeiro",
+     "Paris",
+     "Londres",
+     "Nova York"
+    ],
+    "a": 1
+   },
+   {
+    "q": "O que ele fez com o dinheiro do Prêmio Deutsch?",
+    "o": [
+     "Investiu na construção do 14-Bis",
+     "Devolveu aos organizadores",
+     "Comprou uma fazenda de café",
+     "Distribuiu entre sua equipe e os pobres de Paris"
+    ],
+    "a": 3
+   },
+   {
+    "q": "Que distância o 14-Bis percorreu em 12 de novembro de 1906?",
+    "o": [
+     "220 metros",
+     "60 metros",
+     "1 quilômetro",
+     "21 metros"
+    ],
+    "a": 0
+   },
+   {
+    "q": "Por que, segundo o texto, a primazia do voo é discutida até hoje?",
+    "o": [
+     "Porque o 14-Bis nunca voou diante de testemunhas",
+     "Porque não há registro dos voos dos Wright",
+     "Porque os Wright voaram antes, mas sem comissão oficial e com auxílio para decolar",
+     "Porque os dois voos aconteceram no mesmo dia"
+    ],
+    "a": 2
+   },
+   {
+    "q": "O que Santos Dumont fez com os planos do Demoiselle?",
+    "o": [
+     "Vendeu a uma fábrica francesa",
+     "Publicou livremente",
+     "Patenteou em vários países",
+     "Destruiu para evitar uso militar"
+    ],
+    "a": 1
+   }
+  ],
+  "source": "padrao",
+  "createdAt": 0
+ },
+ {
+  "id": "cerrado",
+  "title": "O Cerrado",
+  "body": "O Cerrado ocupa cerca de dois milhões de quilômetros quadrados no centro do Brasil, quase um quarto do território nacional. É o segundo maior bioma do país, atrás apenas da Amazônia, e a savana com maior diversidade de espécies do planeta. Mais de doze mil espécies de plantas já foram catalogadas ali, e uma parte grande delas não existe em nenhum outro lugar.\n\nQuem vê as árvores baixas e retorcidas pode imaginar uma vegetação pobre. A maior parte dela, porém, está escondida. Para alcançar a água durante os meses de seca, muitas plantas desenvolvem raízes que descem dez metros ou mais, e a massa subterrânea frequentemente supera a que fica acima do solo. Por isso o Cerrado é às vezes descrito como uma floresta de cabeça para baixo.\n\nEssas raízes ajudam a explicar outra função do bioma. A chuva que cai entre outubro e abril infiltra-se no solo profundo e abastece aquíferos que alimentam os rios durante a estiagem. Nascem no Cerrado águas que correm para oito das doze grandes regiões hidrográficas brasileiras, entre elas as do São Francisco, do Tocantins-Araguaia e do Paraná. Daí o apelido de berço das águas.\n\nO fogo também faz parte dessa história. Queimadas naturais, provocadas por raios no início da estação chuvosa, ocorrem ali há milhões de anos. Muitas espécies têm casca grossa, que protege o tronco, e algumas só florescem ou germinam depois da passagem das chamas. O problema está na frequência e na época: incêndios provocados na seca, ano após ano, são bem mais destrutivos.\n\nCerca de metade da vegetação original já foi convertida, principalmente em pastagens e lavouras de grãos. Como apenas uma pequena fração do bioma está em unidades de conservação de proteção integral, pesquisadores consideram o Cerrado um dos ambientes mais ameaçados do país.",
+  "qs": [
+   {
+    "q": "Qual é a posição do Cerrado entre os biomas brasileiros, em tamanho?",
+    "o": [
+     "O maior",
+     "O terceiro maior",
+     "O segundo maior",
+     "O menor"
+    ],
+    "a": 2
+   },
+   {
+    "q": "Por que o Cerrado é chamado de floresta de cabeça para baixo?",
+    "o": [
+     "Porque grande parte da massa das plantas está nas raízes",
+     "Porque as árvores crescem inclinadas",
+     "Porque as folhas caem na estação chuvosa",
+     "Porque fica em regiões de vale"
+    ],
+    "a": 0
+   },
+   {
+    "q": "O que justifica o apelido de berço das águas?",
+    "o": [
+     "É o bioma onde mais chove no país",
+     "Tem os maiores lagos do Brasil",
+     "Fica ao lado do litoral",
+     "Abastece rios de oito das doze regiões hidrográficas"
+    ],
+    "a": 3
+   },
+   {
+    "q": "O que o texto afirma sobre o fogo no Cerrado?",
+    "o": [
+     "Nunca ocorreu de forma natural",
+     "Ocorre naturalmente há milhões de anos; o problema é a frequência e a época",
+     "É sempre benéfico, em qualquer época",
+     "Só passou a existir com a agricultura"
+    ],
+    "a": 1
+   },
+   {
+    "q": "Quanto da vegetação original já foi convertida?",
+    "o": [
+     "Cerca de 10%",
+     "Quase tudo",
+     "Cerca de metade",
+     "Cerca de um quarto"
+    ],
+    "a": 2
+   }
+  ],
+  "source": "padrao",
+  "createdAt": 0
+ },
+ {
+  "id": "tmwcw442m4de064",
+  "title": "A Origem da Internet e Sua Evolução",
+  "body": "A internet, como a conhecemos hoje, é o resultado de décadas de inovação e colaboração. Suas raízes podem ser traçadas até a Guerra Fria, quando os Estados Unidos buscavam uma forma de manter suas comunicações intactas mesmo após um ataque nuclear. Foi nesse contexto que surgiu a ARPANET (Advanced Research Projects Agency Network) em 1969, conectando quatro universidades: a Universidade da Califórnia em Los Angeles (UCLA), o Stanford Research Institute (SRI), a Universidade da Califórnia em Santa Bárbara (UCSB) e a Universidade de Utah. Essa foi a primeira rede de computadores a usar a comutação de pacotes, uma tecnologia revolucionária que dividia as informações em pequenos blocos, permitindo que viajassem por diferentes caminhos e se recombinassem no destino, tornando a rede mais robusta e resistente a falhas.\n\nUm marco fundamental para a expansão da ARPANET e, consequentemente, da internet, foi a criação dos protocolos TCP/IP (Transmission Control Protocol/Internet Protocol) por Vinton Cerf e Robert Kahn, em 1973. Esses protocolos estabeleceram um conjunto de regras padrão para a comunicação entre diferentes redes, permitindo que computadores de fabricantes distintos e operando em sistemas diferentes pudessem 'conversar' entre si. A adoção do TCP/IP como padrão em 1983, substituindo o protocolo NCP (Network Control Program) da ARPANET, foi um divisor de águas, solidificando as bases para uma rede globalmente interconectada.\n\nDurante a década de 1980, a ARPANET continuou a crescer, mas ainda era majoritariamente um domínio acadêmico e militar. A virada para o uso comercial e público ocorreu principalmente com a desativação da ARPANET em 1990 e a ascensão da World Wide Web no início da década de 1990. Tim Berners-Lee, no CERN (Organização Europeia para a Pesquisa Nuclear), desenvolveu o primeiro navegador web e o conceito de hipertexto (HTTP e HTML) em 1990 e 1991, respectivamente. Sua visão de uma rede de informações interligadas por links revolucionou a forma como as pessoas acessariam e compartilhariam conteúdo. A liberação do código da WWW para o domínio público em 1993, combinada com o lançamento de navegadores gráficos como o Mosaic, abriu as portas para que a internet se tornasse um fenômeno de massa, transformando radicalmente a comunicação, o comércio e o acesso à informação em escala global.",
+  "qs": [
+   {
+    "q": "Qual foi o principal motivo para o desenvolvimento da ARPANET durante a Guerra Fria?",
+    "o": [
+     "Garantir a comunicação militar em caso de ataque nuclear.",
+     "Criar uma plataforma para o comércio eletrônico global.",
+     "Conectar computadores de diferentes fabricantes e sistemas.",
+     "Facilitar a pesquisa acadêmica entre universidades."
+    ],
+    "a": 0,
+    "tipo": "literal"
+   },
+   {
+    "q": "Em que ano a ARPANET foi estabelecida, conectando as primeiras universidades?",
+    "o": [
+     "1973",
+     "1990",
+     "1969",
+     "1983"
+    ],
+    "a": 2,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual tecnologia revolucionária a ARPANET utilizou para tornar a rede mais robusta e resistente a falhas?",
+    "o": [
+     "O conceito de hipertexto.",
+     "Navegadores gráficos como o Mosaic.",
+     "Os protocolos TCP/IP.",
+     "A comutação de pacotes."
+    ],
+    "a": 3,
+    "tipo": "literal"
+   },
+   {
+    "q": "Quem são os criadores dos protocolos TCP/IP, que foram fundamentais para a expansão da internet?",
+    "o": [
+     "Vinton Cerf e Robert Kahn.",
+     "Tim Berners-Lee e Robert Kahn.",
+     "Vinton Cerf e Tim Berners-Lee.",
+     "Robert Kahn e o CERN."
+    ],
+    "a": 0,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual foi a principal consequência da adoção do TCP/IP como padrão em 1983?",
+    "o": [
+     "A desativação da ARPANET e o fim da internet.",
+     "O desenvolvimento do primeiro navegador web e do hipertexto.",
+     "A restrição do uso da internet ao domínio militar.",
+     "A solidificação das bases para uma rede globalmente interconectada."
+    ],
+    "a": 3,
+    "tipo": "inferencia"
+   },
+   {
+    "q": "Antes da ascensão da World Wide Web, qual era o principal tipo de usuário da ARPANET?",
+    "o": [
+     "Desenvolvedores de navegadores gráficos.",
+     "Instituições acadêmicas e militares.",
+     "O público em geral.",
+     "Empresas de comércio eletrônico."
+    ],
+    "a": 1,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual foi o papel de Tim Berners-Lee na evolução da internet?",
+    "o": [
+     "Ele criou a ARPANET e a comutação de pacotes.",
+     "Ele desenvolveu os protocolos TCP/IP.",
+     "Ele criou o conceito de hipertexto e o primeiro navegador web.",
+     "Ele liberou o código da ARPANET para o domínio público."
+    ],
+    "a": 2,
+    "tipo": "literal"
+   },
+   {
+    "q": "O que a liberação do código da World Wide Web para o domínio público em 1993, combinada com o lançamento de navegadores gráficos, significou para a internet?",
+    "o": [
+     "A estagnação do desenvolvimento de novas tecnologias.",
+     "O retorno da internet ao domínio exclusivamente acadêmico.",
+     "A restrição do acesso à informação a poucos usuários.",
+     "A transformação da internet em um fenômeno de massa."
+    ],
+    "a": 3,
+    "tipo": "inferencia"
+   },
+   {
+    "q": "Qual a principal ideia que o texto transmite sobre a evolução da internet?",
+    "o": [
+     "A internet sempre foi uma ferramenta de uso comercial e público.",
+     "A internet se desenvolveu sem a influência de contextos históricos como a Guerra Fria.",
+     "A internet foi criada por uma única pessoa em um único evento.",
+     "A internet é o resultado de um processo contínuo de inovação e colaboração."
+    ],
+    "a": 3,
+    "tipo": "inferencia"
+   },
+   {
+    "q": "Qual foi o impacto da visão de Tim Berners-Lee de uma rede de informações interligadas por links?",
+    "o": [
+     "Aumentou a complexidade da comunicação entre redes distintas.",
+     "Limitou o acesso à informação a um grupo seleto de usuários.",
+     "Retardou a adoção de protocolos padrão para a comunicação.",
+     "Revolucionou a forma como as pessoas acessariam e compartilhariam conteúdo."
+    ],
+    "a": 3,
+    "tipo": "inferencia"
+   }
+  ],
+  "source": "ia",
+  "meta": {
+   "tema": "história da internet",
+   "tipo": "informativo",
+   "nivel": "medio"
+  },
+  "model": "google/gemini-2.5-flash",
+  "createdAt": 1794448178590
+ }
+]
