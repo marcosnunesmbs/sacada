@@ -170,15 +170,40 @@ textarea{width:100%;min-height:240px;font-family:var(--read);font-size:17px;line
 .ctl input[type=file]{font:inherit;font-size:13px;color:var(--muted);max-width:100%}
 #la-body{min-height:150px}
 .acts{flex-wrap:nowrap;gap:6px}
+
+/* login */
+body.locked .wrap{display:none}
+body:not(.locked) #login{display:none}
+#login{min-height:100vh;display:grid;place-items:center;padding:16px}
+#login form{width:100%;max-width:360px;display:flex;flex-direction:column;gap:16px}
+#login .brand{display:flex;align-items:center;gap:10px;font-size:20px}
+#login .brand svg{width:44px;height:18px}
+#login input[type=password]{font:inherit;font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+#login .fb{min-height:1.4em;font-size:14px}
+#logout:not([hidden])+#theme{margin-left:0}
 </style>
 </head>
-<body>
+<body class="locked">
+<div id="login">
+  <form class="panel" id="lg-form" autocomplete="on">
+    <div class="brand">
+      <svg viewBox="0 0 44 18" aria-hidden="true"><path d="M5 14 Q22 -6 39 14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><circle cx="5" cy="14" r="3" fill="var(--ink)"/><circle cx="39" cy="14" r="3" fill="var(--ink)"/></svg>
+      <b>Sacada</b>
+    </div>
+    <label class="ctl">Senha de acesso
+      <input type="password" id="lg-pass" autocomplete="current-password" required autofocus>
+    </label>
+    <button class="btn primary" id="lg-btn" type="submit">Entrar</button>
+    <p class="fb no" id="lg-msg" role="alert"></p>
+  </form>
+</div>
 <div class="wrap">
 <p class="fb no" id="boot-err" hidden></p>
 <header class="top">
   <div class="brand">
     <svg viewBox="0 0 44 18" aria-hidden="true"><path d="M5 14 Q22 -6 39 14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><circle cx="5" cy="14" r="3" fill="var(--ink)"/><circle cx="39" cy="14" r="3" fill="var(--ink)"/></svg>
     <b>Sacada</b><span>treino de leitura rápida, medido em palavras por minuto</span>
+    <button class="btn" id="logout" type="button" hidden>Sair</button>
     <button class="btn" id="theme" type="button"></button>
   </div>
   <div class="navscroll"><nav id="nav">
@@ -440,8 +465,18 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const store={get(k,d){try{const v=localStorage.getItem('sacada_'+k);return v?JSON.parse(v):d}catch(e){return d}},
              set(k,v){try{localStorage.setItem('sacada_'+k,JSON.stringify(v))}catch(e){}}};
 let results=[],pendingTest=null;
-async function api(method,url,body){const r=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+/* ---------- autenticação: token assinado pelo servidor, guardado no navegador ---------- */
+const AUTH={get(){try{return localStorage.getItem('sacada_auth')||''}catch(e){return''}},
+            set(t){try{t?localStorage.setItem('sacada_auth',t):localStorage.removeItem('sacada_auth')}catch(e){}}};
+function authHeaders(){const t=AUTH.get();return t?{'Authorization':'Bearer '+t}:{}}
+function logout(msg){AUTH.set('');document.body.classList.add('locked');gdStop();rsStop();scStop();flStop();pfStop();bsStop();
+  $('#lg-msg').textContent=msg||'';$('#lg-pass').value='';$('#lg-pass').focus()}
+async function checkAuth(){const r=await fetch('/api/auth',{headers:authHeaders()});const d=await r.json();
+  $('#logout').hidden=!d.required;return !d.required||d.valid}
+async function api(method,url,body){const h=authHeaders();if(body)h['Content-Type']='application/json';
+  const r=await fetch(url,{method,headers:h,body:body?JSON.stringify(body):undefined});
   let d=null;try{d=await r.json()}catch(e){}
+  if(r.status===401&&d&&d.auth){logout(d.error);const e=new Error(d.error);e.auth=true;throw e}
   if(!r.ok)throw new Error(d&&d.error||'Erro '+r.status+' no servidor.');return d}
 function logResult(ex,data){const r=Object.assign({ex,t:Date.now()},data);results.push(r);api('POST','/api/resultados',r).catch(()=>{})}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -717,14 +752,26 @@ document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT|BUTTON|A/.test
   if(cur==='rsvp'&&(e.code==='ArrowUp'||e.code==='ArrowDown')){e.preventDefault();const r=$('#rs-ppm');r.value=+r.value+(e.code==='ArrowUp'?10:-10);r.oninput()}
   if(cur==='periferia'){if(e.code==='ArrowLeft')pfAnswer(true);if(e.code==='ArrowRight')pfAnswer(false)}});
 let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(cur==='inicio')renderChart(results.filter(r=>r.ex==='teste'))},150)});
-window.addEventListener('hashchange',route);
+window.addEventListener('hashchange',()=>{route();checkAuth().then(ok=>{if(!ok)logout('Sessão expirada. Entre de novo.')}).catch(()=>{})});
 function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('sacada_theme',t)}catch(e){}$('#theme').textContent=t==='dark'?'Tema claro':'Tema escuro'}
 $('#theme').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
 setTheme(document.documentElement.dataset.theme||'light');
-(async function boot(){
+async function start(){$('#boot-err').hidden=true;
   try{[AI,results]=await Promise.all([api('GET','/api/status'),api('GET','/api/resultados')]);await loadTexts()}
-  catch(e){const b=$('#boot-err');b.textContent='O servidor não respondeu. Inicie-o com "npm start" na pasta do projeto e recarregue a página.';b.hidden=false}
-  fillSelects();bindRange('gd-ppm');bindRange('rs-ppm');applyTargets();route()})();
+  catch(e){if(e.auth)return;const b=$('#boot-err');b.textContent='O servidor não respondeu. Inicie-o com "npm start" na pasta do projeto e recarregue a página.';b.hidden=false}
+  document.body.classList.remove('locked');
+  fillSelects();bindRange('gd-ppm');bindRange('rs-ppm');applyTargets();route()}
+$('#lg-form').onsubmit=async e=>{e.preventDefault();const btn=$('#lg-btn'),msg=$('#lg-msg');btn.disabled=true;msg.textContent='';
+  try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({senha:$('#lg-pass').value})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){msg.textContent=d.error||'Erro '+r.status+' no servidor.';$('#lg-pass').select();return}
+    AUTH.set(d.token||'');$('#lg-pass').value='';await start()}
+  catch(err){msg.textContent='O servidor não respondeu.'}
+  finally{btn.disabled=false}};
+$('#logout').onclick=()=>logout('');
+(async function boot(){
+  let ok=false;try{ok=await checkAuth()}catch(e){document.body.classList.remove('locked');ok=true}
+  if(ok)start();else logout(AUTH.get()?'Sessão expirada. Entre de novo.':'')})();
 </script>
 </body>
 </html>

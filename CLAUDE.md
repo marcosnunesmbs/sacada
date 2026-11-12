@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run dev` — same with `node --watch` auto-restart
 - Requires Node >= 18 (uses global `fetch`). There is no `npm install` step, no build, no linter and no test suite.
 
-Config comes from `.env` (see `.env.example`): `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `google/gemini-2.5-flash`), `QUIZ_PERGUNTAS` (clamped 5–15), `PORT`, plus undocumented `OPENROUTER_BASE_URL`. `server.js` has its own tiny `.env` parser; real environment variables take precedence. Without an API key the app still works with existing texts; only AI generation is disabled. Restart after editing `.env` (`--watch` does not watch it).
+Config comes from `.env` (see `.env.example`): `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `google/gemini-2.5-flash`), `QUIZ_PERGUNTAS` (clamped 5–15), `PORT`, `HOST` (default `127.0.0.1`; `0.0.0.0` in containers), `MASTER_PASSWORD`, plus undocumented `OPENROUTER_BASE_URL`. `server.js` has its own tiny `.env` parser; real environment variables take precedence. Without an API key the app still works with existing texts; only AI generation is disabled. Restart after editing `.env` (`--watch` does not watch it).
 
 ## Architecture
 
@@ -32,6 +32,10 @@ Two source files:
 
 `chat()` requests `response_format: json_object`, retrying without it on HTTP 400 (some models reject it), maps common status codes to pt-BR messages, and parses via `parseModelJSON()` (strips code fences, falls back to slicing `{…}`). `generateQuiz()` retries once if fewer than 5 valid questions come back. `generateText()` passes existing titles to avoid repeats; the genre/difficulty options are the `TIPOS`/`NIVEIS` maps. The API key never leaves the server — `/api/status` only exposes `configured`, model and question count.
 
+### Auth
+
+Enabled only when `MASTER_PASSWORD` is set. `POST /api/login {senha}` returns a stateless token `exp36.hmac` signed with a key derived from `data/.auth-secret` (random, created on first run, gitignored) plus the password, so changing either invalidates all tokens. Every `/api/*` route except `GET /api/auth` and `POST /api/login` sits behind the gate in `api()`; failures return 401 with `auth: true`. Client side, the token lives in `localStorage` (`sacada_auth`), `api()` sends it as `Authorization: Bearer` and calls `logout()` on an `auth` 401. `body.locked` hides the app and shows `#login`, and the token is re-checked on every hash change. Login failures are rate-limited in memory per IP, using `X-Forwarded-For` behind Traefik.
+
 ### API
 
-`GET /api/status` · `GET|POST /api/textos` · `DELETE /api/textos/:id` · `POST /api/textos/gerar` `{tema, tipo, palavras, nivel}` · `POST /api/textos/:id/questionario` (regenerate quiz) · `GET|POST|DELETE /api/resultados`. Text limits: 80–6000 words, request body 1 MB.
+`GET /api/auth` · `POST /api/login` · `GET /api/status` · `GET|POST /api/textos` · `DELETE /api/textos/:id` · `POST /api/textos/gerar` `{tema, tipo, palavras, nivel}` · `POST /api/textos/:id/questionario` (regenerate quiz) · `GET|POST|DELETE /api/resultados`. Text limits: 80–6000 words, request body 1 MB.

@@ -20,6 +20,10 @@ Sem a chave, tudo funciona com os textos já cadastrados; só a geração por IA
 | `OPENROUTER_MODEL` | `google/gemini-2.5-flash` | Modelo que escreve textos e perguntas. |
 | `QUIZ_PERGUNTAS` | `10` | Tamanho do banco de perguntas por texto (5 a 15). |
 | `PORT` | `3000` | Porta local. |
+| `MASTER_PASSWORD` | vazio | Senha da tela de login. Vazia = acesso livre (uso local). |
+| `HOST` | `127.0.0.1` | Endereço de escuta. Em Docker/Coolify use `0.0.0.0`. |
+
+Com `MASTER_PASSWORD` definida, o navegador recebe um token assinado (válido por 30 dias) ao acertar a senha, e toda chamada à API exige esse token. Trocar a senha, ou apagar `data/.auth-secret`, desconecta todos os navegadores. Cinco senhas erradas bloqueiam o IP por 15 minutos.
 
 Depois de editar o `.env`, reinicie o servidor.
 

@@ -28,6 +28,10 @@ const API_KEY = (process.env.OPENROUTER_API_KEY || '').trim();
 const MODEL = (process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash').trim();
 const BASE_URL = (process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/+$/, '');
 const N_PERGUNTAS = Math.min(15, Math.max(5, Number(process.env.QUIZ_PERGUNTAS) || 10));
+const HOST = (process.env.HOST || '127.0.0.1').trim();
+const MASTER_PASSWORD = process.env.MASTER_PASSWORD || '';
+const AUTH_ON = MASTER_PASSWORD !== '';
+const TOKEN_TTL = 30 * 24 * 3600 * 1000; // 30 dias
 
 /* ---------- armazenamento em JSON ---------- */
 const DATA = path.join(ROOT, 'data');
@@ -43,6 +47,29 @@ function writeJSON(f, v) {
   fs.writeFileSync(tmp, JSON.stringify(v, null, 1));
   fs.renameSync(tmp, f);
 }
+
+/* ---------- autenticação ----------
+   Token = validade + HMAC. A chave de assinatura junta um segredo aleatório guardado em data/
+   com a MASTER_PASSWORD: trocar a senha (ou apagar o arquivo) desconecta todos os navegadores. */
+const F_SECRET = path.join(DATA, '.auth-secret');
+if (!fs.existsSync(F_SECRET)) fs.writeFileSync(F_SECRET, crypto.randomBytes(32).toString('hex'));
+const AUTH_KEY = crypto.createHmac('sha256', fs.readFileSync(F_SECRET, 'utf8').trim()).update(MASTER_PASSWORD).digest();
+const sign = s => crypto.createHmac('sha256', AUTH_KEY).update(s).digest('base64url');
+const safeEqual = (a, b) => { const x = crypto.createHash('sha256').update(String(a)).digest(), y = crypto.createHash('sha256').update(String(b)).digest(); return crypto.timingSafeEqual(x, y); };
+function makeToken() { const exp = (Date.now() + TOKEN_TTL).toString(36); return exp + '.' + sign(exp); }
+function validToken(tok) {
+  const m = /^([0-9a-z]+)\.([\w-]+)$/.exec(String(tok || ''));
+  return !!m && parseInt(m[1], 36) > Date.now() && safeEqual(m[2], sign(m[1]));
+}
+const bearer = req => (/^Bearer\s+(.+)$/i.exec(req.headers.authorization || '') || [])[1];
+const authed = req => !AUTH_ON || validToken(bearer(req));
+
+// limite de tentativas: 5 erros por IP a cada 15 minutos
+const FAILS = new Map();
+// o proxy (Traefik) acrescenta o IP real no fim do X-Forwarded-For; o começo pode ser forjado pelo cliente
+const clientIp = req => String(req.headers['x-forwarded-for'] || '').split(',').pop().trim() || req.socket.remoteAddress;
+function loginBlocked(ip) { const f = FAILS.get(ip); if (f && f.until < Date.now()) { FAILS.delete(ip); return false; } return !!f && f.n >= 5; }
+function loginFailed(ip) { const f = FAILS.get(ip) || { n: 0, until: Date.now() + 15 * 60000 }; f.n++; FAILS.set(ip, f); }
 
 /* ---------- utilidades ---------- */
 function httpErr(status, message) { const e = new Error(message); e.status = status; return e; }
@@ -184,6 +211,23 @@ function checkText(title, body) {
 
 async function api(req, res, url) {
   const p = url.pathname, m = req.method;
+
+  if (p === '/api/auth' && m === 'GET') return send(res, 200, { required: AUTH_ON, valid: authed(req) });
+  if (p === '/api/login' && m === 'POST') {
+    if (!AUTH_ON) return send(res, 200, { token: null });
+    const ip = clientIp(req);
+    if (loginBlocked(ip)) throw httpErr(429, 'Muitas tentativas erradas. Aguarde 15 minutos e tente de novo.');
+    const b = await readBody(req);
+    if (!safeEqual(String(b.senha || ''), MASTER_PASSWORD)) {
+      loginFailed(ip);
+      await new Promise(r => setTimeout(r, 600));
+      throw httpErr(401, 'Senha incorreta.');
+    }
+    FAILS.delete(ip);
+    return send(res, 200, { token: makeToken() });
+  }
+  if (!authed(req)) { const e = httpErr(401, 'Sessão inválida ou expirada. Entre de novo.'); e.auth = true; throw e; }
+
   if (p === '/api/status' && m === 'GET') return send(res, 200, { configured: !!API_KEY, model: MODEL, perguntas: N_PERGUNTAS });
 
   if (p === '/api/resultados') {
@@ -242,7 +286,7 @@ function serveStatic(req, res, url) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
   if (url.pathname.startsWith('/api/')) {
-    api(req, res, url).catch(e => { if (!e.status) console.error(e); send(res, e.status || 500, { error: e.status ? e.message : 'Erro interno no servidor. Veja o terminal.' }); });
+    api(req, res, url).catch(e => { if (!e.status) console.error(e); send(res, e.status || 500, { error: e.status ? e.message : 'Erro interno no servidor. Veja o terminal.', auth: e.auth || undefined }); });
   } else if (req.method === 'GET' || req.method === 'HEAD') serveStatic(req, res, url);
   else { res.writeHead(405); res.end(); }
 });
@@ -251,7 +295,8 @@ server.on('error', e => {
   else console.error(e);
   process.exit(1);
 });
-server.listen(PORT, '127.0.0.1', () => {
-  console.log('Sacada rodando em http://localhost:' + PORT);
+server.listen(PORT, HOST, () => {
+  console.log('Sacada rodando em http://' + (HOST === '0.0.0.0' ? 'localhost' : HOST) + ':' + PORT);
+  console.log(AUTH_ON ? 'Login ativado (MASTER_PASSWORD definida).' : 'MASTER_PASSWORD vazia no .env: acesso sem login.');
   console.log(API_KEY ? 'OpenRouter configurada. Modelo: ' + MODEL : 'OPENROUTER_API_KEY vazia no .env: geração de textos e questionários desativada.');
 });
