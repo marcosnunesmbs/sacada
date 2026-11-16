@@ -65,6 +65,7 @@ nav{display:inline-flex;align-items:center;gap:2px;min-width:max-content;padding
 nav a{padding:6px 12px;text-decoration:none;color:var(--muted);font-weight:500;font-size:13.5px;border-radius:var(--r);white-space:nowrap;transition:color .15s,background .15s,box-shadow .15s}
 nav a:hover{color:var(--ink)}
 nav a[aria-current="page"]{color:var(--ink);background:var(--surface);box-shadow:var(--shadow)}
+nav a#home{display:inline-flex;align-items:center;gap:6px}
 nav i{width:1px;height:16px;background:var(--input);margin:0 6px}
 
 /* blocos */
@@ -159,6 +160,8 @@ nav i{width:1px;height:16px;background:var(--input);margin:0 6px}
 .fb{min-height:1.6em;font-weight:500;font-size:14px}
 .ok{color:var(--good)}.no{color:var(--bad)}
 #pf-dot{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--band)}
+#pf-wctl{display:none}
+@media (min-width:900px){#pf-wctl{display:flex}#pf-stage{width:var(--pf-w,100%);margin-left:auto;margin-right:auto}}
 .pf-item{position:absolute;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:.06em}
 
 /* busca */
@@ -335,12 +338,12 @@ body:not(.locked) #login{display:none}
     <svg viewBox="0 0 44 18" aria-hidden="true"><path d="M5 14 Q22 -6 39 14" fill="none" stroke="var(--accent)" stroke-width="1.6"/><circle cx="5" cy="14" r="3" fill="var(--ink)"/><circle cx="39" cy="14" r="3" fill="var(--ink)"/></svg>
     <b>Sacada</b><span>treino de leitura rápida, medido em palavras por minuto</span>
     <div class="top-acts">
-      <a class="btn" id="home" href="#inicio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a>
       <button class="btn" id="logout" type="button" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
       <button class="btn" id="theme" type="button"></button>
     </div>
   </div>
   <div class="navscroll"><nav id="nav">
+    <a id="home" href="#inicio"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</a><i></i>
     <a href="#teste">Teste</a><a href="#guia">Guia visual</a><a href="#rsvp">RSVP</a><a href="#schulte">Schulte</a><a href="#flash">Flash</a><a href="#periferia">Periferia</a><a href="#busca">Busca</a><a href="#treino">Treinos</a><i></i>
     <a href="#biblioteca">Biblioteca</a><a href="#historico">Histórico</a>
   </nav></div>
@@ -359,6 +362,7 @@ body:not(.locked) #login{display:none}
     <div>
       <h2>Sessão de hoje</h2>
       <p class="note" id="plan-note">Faça o teste primeiro. Ele define sua linha de base e as velocidades-alvo dos exercícios.</p>
+      <p class="note row" id="plan-start" hidden><span id="plan-start-txt"></span><button class="btn sm" id="plan-reset" type="button">Reiniciar plano</button><span id="plan-confirm" class="row" hidden>Apaga todos os resultados e recomeça na semana 1. <button class="btn danger sm" id="plan-yes" type="button">Sim, apagar</button><button class="btn sm" id="plan-no" type="button">Cancelar</button></span></p>
       <div class="panel"><ol class="steps" id="steps"></ol></div>
     </div>
     <div>
@@ -523,7 +527,7 @@ body:not(.locked) #login{display:none}
   <p class="lead">Um número, uma palavra ou uma frase aparece por uma fração de segundo. Digite o que viu e confirme com Enter. A cada acerto o item cresce; a cada erro, encolhe. São 10 rodadas.</p>
   <div class="controls">
     <label class="ctl">Conteúdo<select id="fl-mode"><option value="digitos">Dígitos</option><option value="palavras" selected>Palavras</option><option value="frases">Frases</option></select></label>
-    <label class="ctl">Exposição<select id="fl-dur"><option value="500">500 ms</option><option value="300" selected>300 ms</option><option value="200">200 ms</option><option value="120">120 ms</option><option value="80">80 ms</option></select></label>
+    <label class="ctl">Exposição<select id="fl-dur"><option value="1000">1000 ms</option><option value="750">750 ms</option><option value="500">500 ms</option><option value="400">400 ms</option><option value="350">350 ms</option><option value="300" selected>300 ms</option><option value="250">250 ms</option><option value="200">200 ms</option><option value="150">150 ms</option><option value="120">120 ms</option><option value="100">100 ms</option><option value="80">80 ms</option><option value="50">50 ms</option></select></label>
     <button class="btn primary" id="fl-start">Iniciar</button>
     <span class="note mono" id="fl-count"></span>
   </div>
@@ -538,6 +542,7 @@ body:not(.locked) #login{display:none}
   <h1>Periferia</h1>
   <p class="lead">Mantenha o olhar no ponto central. Dois grupos de letras piscam nas laterais por 180 ms, tempo curto demais para mover os olhos. Responda se eram iguais. A cada acerto eles se afastam do centro. São 12 rodadas.</p>
   <div class="controls">
+    <label class="ctl" id="pf-wctl">Largura<select id="pf-w"><option value="100">100%</option><option value="75">75%</option><option value="50">50%</option></select></label>
     <button class="btn primary" id="pf-start">Iniciar</button>
     <span class="note mono" id="pf-count"></span>
   </div>
@@ -551,7 +556,7 @@ body:not(.locked) #login{display:none}
   <h1>Busca visual</h1>
   <p class="lead">Encontre todas as ocorrências da palavra-alvo entre palavras parecidas. Varra em linhas, sem ler cada item. É a marcha de busca: localizar sem ler tudo.</p>
   <div class="controls">
-    <button class="btn primary" id="bs-start">Nova rodada</button>
+    <button class="btn primary" id="bs-start">Iniciar</button>
     <span id="bs-info" class="row"></span>
     <span class="timer" id="bs-timer"></span>
   </div>
@@ -751,6 +756,9 @@ function renderDash(){
   while(days.has(dayKey(d))){s++;d.setDate(d.getDate()-1)}
   $('#st-streak').textContent=s;
   $('#plan-note').textContent=b?'Semana '+(b.week+1)+' do plano. Alvos calculados sobre sua base de '+fmt(b.last.ppm)+' ppm.':'Faça o teste primeiro. Ele define sua linha de base e as velocidades-alvo dos exercícios.';
+  $('#plan-start').hidden=!b;$('#plan-confirm').hidden=true;$('#plan-reset').hidden=false;
+  if(b){const d0=new Date(tests[0].t),d1=new Date(tests[0].t+b.week*6048e5+6048e5);
+    $('#plan-start-txt').textContent='Plano iniciado em '+d0.toLocaleDateString('pt-BR')+' (primeiro teste). A semana '+(b.week+1)+(b.week<3?' termina em '+d1.toLocaleDateString('pt-BR')+'.':' é a última; os alvos ficam fixos.')}
   const today=dayKey(Date.now()),done=new Set(results.filter(r=>dayKey(r.t)===today).map(r=>r.ex));
   const steps=[['schulte','Tabela de Schulte','Aquecimento da atenção visual. Duas ou três tabelas.','2 min'],
     ['periferia','Periferia','Uma série de 12 rodadas.','2 min'],
@@ -869,15 +877,15 @@ function scClick(b,v){if(!S.on)return;if(v===S.next){b.classList.add('hit');S.ne
 $('#sc-start').onclick=scStart;$('#sc-n').onchange=scReady;
 
 /* ---------- flash ---------- */
-const WORDS=[['casa','livro','tempo','mundo','porta','verde','noite','campo','papel','festa','linha','ponte','sonho','vento','chuva','pedra','letra','fonte'],
- ['janela','cidade','caminho','palavra','memória','viagem','leitura','pintura','estrada','relógio','coragem','projeto','sistema','músico','figura','destino'],
- ['montanha','horizonte','floresta','silêncio','aventura','conversa','elefante','mensagem','trabalho','problema','ambiente','harmonia','primavera','paisagem'],
- ['biblioteca','arquitetura','compreensão','velocidade','conhecimento','experiência','universidade','temperatura','concentração','aprendizagem','desenvolvimento']];
-const PHRASES=[['céu azul','porta aberta','mar calmo','café quente','rua vazia','livro novo','noite fria','sol forte'],
- ['a casa amarela','um dia longo','o trem partiu','chuva de verão','pão com manteiga','luz da manhã','fim de semana','sala de aula'],
- ['o vento mudou cedo','ela chegou antes dele','a ponte sobre o rio','um copo de água','o livro está aberto','três linhas por vez','a rua ficou vazia'],
- ['o gato dorme no sofá','a chuva caiu sem parar','ele leu a carta devagar','o ônibus saiu sem atraso','a aula começa às oito'],
- ['o menino correu até a praça','ela guardou o livro na estante','o barco voltou antes da noite','a luz da sala ficou acesa']];
+const WORDS=[['casa','livro','tempo','mundo','porta','verde','noite','campo','papel','festa','linha','ponte','sonho','vento','chuva','pedra','letra','fonte','prato','bolsa','carro','cinto','dente','fundo','gente','hotel','igual','jogo','lugar','mesa','navio','ouvir','palco','queda','rádio','samba','tarde','unha','vidro','zebra','barco','claro','dia','espaço','faixa','gosto','horta','ilha','janta','moeda'],
+ ['janela','cidade','caminho','palavra','memória','viagem','leitura','pintura','estrada','relógio','coragem','projeto','sistema','músico','figura','destino','árvore','cadeira','família','jardim','lembrança','mercado','natureza','oficina','paciência','questão','recurso','sabedoria','telefone','vitória','alegria','biscoito','caderno','distância','esperança','fortuna','garrafa','história','imagem','jornada','lanterna','manhã','notícia','objetivo','paisagem','quadrado','revista','semente','tesouro','vizinho'],
+ ['montanha','horizonte','floresta','silêncio','aventura','conversa','elefante','mensagem','trabalho','problema','ambiente','harmonia','primavera','abraçar','borboleta','caminhada','descoberta','estrutura','felicidade','geografia','hospitalidade','inspiração','laboratório','movimento','navegação','organização','prioridade','qualidade','realidade','sociedade','tecnologia','umidade','variedade','abundância','biografia','cooperação','dedicação','enciclopédia','fotografia','gratidão','imaginação','liberdade','matemática','oportunidade','personagem','resistência','sensibilidade','tradição','vocabulário'],
+ ['biblioteca','arquitetura','compreensão','velocidade','conhecimento','experiência','universidade','temperatura','concentração','aprendizagem','desenvolvimento','administração','comunicação','responsabilidade','possibilidade','investigação','transformação','característica','interpretação','profissional','independência','organizacional','extraordinário','engenharia','infraestrutura','sustentabilidade','criatividade','disponibilidade','entretenimento','fundamental','globalização','improvisação','metodologia','neurociência','observatório','planejamento','questionamento','racionalidade','solidariedade','territorialidade','vulnerabilidade','psicologia','mediterrâneo','paralelepípedo','otorrinolaringologista']];
+const PHRASES=[['céu azul','porta aberta','mar calmo','café quente','rua vazia','livro novo','noite fria','sol forte','vento leve','pão fresco','casa velha','chuva fina','flor branca','lua cheia','água limpa','dia claro','rio largo','festa linda','pedra dura','mesa posta','trem lento','praia deserta','bola rápida','cama macia','luz fraca','carro azul','sopa quente','gato preto','tarde calma','jogo difícil'],
+ ['a casa amarela','um dia longo','o trem partiu','chuva de verão','pão com manteiga','luz da manhã','fim de semana','sala de aula','o cão latiu','um bom amigo','a porta bateu','café com leite','o sol nasceu','uma carta antiga','o mar subiu','tarde de domingo','cheiro de mato','copo de suco','a janela abriu','vento do norte','um passo à frente','mapa da cidade','sombra da árvore','som da chuva','o rio secou','vida no campo','a festa acabou','muro de pedra','estrada de terra','noite de lua'],
+ ['o vento mudou cedo','ela chegou antes dele','a ponte sobre o rio','um copo de água','o livro está aberto','três linhas por vez','a rua ficou vazia','o relógio parou ontem','a menina cantou baixo','um barco na neblina','meu irmão comprou pão','as folhas caíram todas','o trem atrasou hoje','a loja fecha às seis','nós vimos o mar','o café esfriou na mesa','uma luz no corredor','ele abriu a janela','a chuva passou rápido','o gato subiu no muro','a feira começa cedo','o ônibus não veio','a casa cheirava a bolo','o vizinho tocou violão','a estrada era longa'],
+ ['o gato dorme no sofá','a chuva caiu sem parar','ele leu a carta devagar','o ônibus saiu sem atraso','a aula começa às oito','a professora explicou a lição','o menino perdeu o chapéu azul','minha avó faz bolo aos domingos','o carteiro deixou a encomenda','a praia estava cheia de gente','eles caminharam até o farol','a biblioteca fecha mais cedo hoje','o motor fez um barulho estranho','a janela da cozinha ficou aberta','o pássaro pousou na cerca velha','nós jantamos tarde na sexta','o jornal chegou molhado de chuva','ela esqueceu as chaves em casa','o professor corrigiu todas as provas','a ponte estava fechada para obras'],
+ ['o menino correu até a praça','ela guardou o livro na estante','o barco voltou antes da noite','a luz da sala ficou acesa','o cachorro esperou o dono na porta','a viagem de trem durou o dia inteiro','meu pai consertou o telhado depois da chuva','as crianças brincaram no quintal até escurecer','a cidade acordou coberta por uma neblina densa','o escritor terminou o capítulo na madrugada fria','a padaria da esquina abre antes do nascer do sol','ela explicou o problema com calma e clareza','o vento forte derrubou as flores do vaso','nós combinamos de nos encontrar na estação central','o músico afinou o violão antes do concerto','a turma inteira aplaudiu quando o resultado saiu','o velho marinheiro contou histórias do mar aberto','a chuva de ontem encheu o rio da cidade']];
 const F={round:0,level:0,hits:0,best:0,cur:'',timers:[],on:false,last:''};
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
 function flStop(){F.timers.forEach(clearTimeout);F.timers=[];F.on=false;$('#fl-in').disabled=true;$('#fl-ok').disabled=true}
@@ -896,7 +904,7 @@ $('#fl-form').onsubmit=e=>{e.preventDefault();if(!F.on||$('#fl-in').disabled)ret
 /* ---------- periferia ---------- */
 const P={round:0,d:14,hits:0,maxD:0,same:false,wait:false,timers:[],on:false};
 function pfStop(){P.timers.forEach(clearTimeout);P.timers=[];P.on=false;P.wait=false;$('#pf-same').disabled=true;$('#pf-diff').disabled=true;$('#pf-l').textContent='';$('#pf-r').textContent=''}
-function pfNext(){if(P.round>=12){pfStop();logResult('periferia',{hits:P.hits,maxD:P.maxD});
+function pfNext(){if(P.round>=12){pfStop();logResult('periferia',{hits:P.hits,maxD:P.maxD,larg:pfLarg()});
     $('#pf-result').innerHTML='<strong>'+P.hits+' de 12</strong><span>Maior afastamento com acerto: '+P.maxD+'% da largura para cada lado. Em tela maior, ou mais perto dela, o ângulo visual cresce e o exercício fica mais difícil.</span>';$('#pf-result').hidden=false;return}
   P.round++;$('#pf-count').textContent=P.round+'/12';
   P.timers.push(setTimeout(()=>{const A='BCDFGHJKLMNPRSTVXZ',len=P.d>30?3:2;let a='';for(let i=0;i<len;i++)a+=A[rand(A.length)];let b=a;P.same=Math.random()<.5;
@@ -908,6 +916,11 @@ function pfAnswer(same){if(!P.on||!P.wait)return;P.wait=false;$('#pf-same').disa
   else{P.d=Math.max(8,P.d-4);fb.textContent=P.same?'Eram iguais':'Eram diferentes';fb.className='fb no'}
   P.timers.push(setTimeout(pfNext,500))}
 $('#pf-start').onclick=()=>{pfStop();P.round=0;P.d=14;P.hits=0;P.maxD=0;P.on=true;$('#pf-result').hidden=true;$('#pf-fb').textContent='';pfNext()};
+function pfLarg(){return matchMedia('(min-width:900px)').matches?+$('#pf-w').value:100}
+function pfWidth(){$('#pf-stage').style.setProperty('--pf-w',$('#pf-w').value+'%')}
+try{const w=localStorage.getItem('sacada_pf_w');if(w&&[...$('#pf-w').options].some(o=>o.value===w))$('#pf-w').value=w}catch(e){}
+pfWidth();
+$('#pf-w').onchange=()=>{pfWidth();try{localStorage.setItem('sacada_pf_w',$('#pf-w').value)}catch(e){}};
 $('#pf-same').onclick=()=>pfAnswer(true);$('#pf-diff').onclick=()=>pfAnswer(false);
 
 /* ---------- busca ---------- */
@@ -918,9 +931,10 @@ const SETS=[['prato',['preto','parto','prata','porta','pacto','ponto','trapo','p
  ['mundo',['mando','fundo','mudou','muito','medo','manto','nunca','rumo','surdo']]];
 const B={found:0,n:0,errs:0,t0:0,int:null,on:false,target:''};
 function bsStop(){clearInterval(B.int);B.on=false}
+function bsReady(){bsStop();const g=$('#bs-grid');g.innerHTML='';g.style.display='none';$('#bs-info').textContent='';$('#bs-timer').textContent='';$('#bs-result').hidden=true;$('#bs-start').textContent='Iniciar'}
 function bsStart(){bsStop();const [t,ds]=SETS[rand(SETS.length)];B.target=t;B.n=5+rand(4);B.found=0;B.errs=0;B.on=true;$('#bs-result').hidden=true;
   const items=Array(B.n).fill(t);while(items.length<48)items.push(ds[rand(ds.length)]);
-  const g=$('#bs-grid');g.innerHTML='';shuffle(items).forEach(w=>{const b=document.createElement('button');b.textContent=w;b.onclick=()=>bsClick(b,w);g.append(b)});
+  const g=$('#bs-grid');g.style.display='';$('#bs-start').textContent='Nova rodada';g.innerHTML='';shuffle(items).forEach(w=>{const b=document.createElement('button');b.textContent=w;b.onclick=()=>bsClick(b,w);g.append(b)});
   bsInfo();B.t0=performance.now();B.int=setInterval(()=>$('#bs-timer').textContent=sec((performance.now()-B.t0)/1000),100)}
 function bsInfo(){$('#bs-info').innerHTML='Encontre <span class="target">'+B.target+'</span> <span class="mono">'+B.found+'/'+B.n+'</span>'}
 function bsClick(b,w){if(!B.on||b.classList.contains('found'))return;
@@ -983,7 +997,7 @@ const FLM={digitos:'Dígitos',palavras:'Palavras',frases:'Frases'};
 const EVO=[
   {ex:'schulte',val:r=>r.time,show:sec,low:true,what:'tempo para completar a tabela',group:r=>r.n+' × '+r.n},
   {ex:'flash',val:r=>r.best,show:v=>'nível '+v,low:false,what:'nível máximo com acerto',group:r=>(FLM[r.mode]||r.mode)+' · '+r.dur+' ms'},
-  {ex:'periferia',val:r=>r.maxD,show:v=>v+'%',low:false,what:'maior afastamento com acerto',group:null},
+  {ex:'periferia',val:r=>r.maxD,show:v=>v+'%',low:false,what:'maior afastamento com acerto',group:r=>'largura '+(r.larg||100)+'%'},
   {ex:'busca',val:r=>r.n?r.time/r.n:null,show:sec,low:true,what:'tempo médio por alvo',group:null},
   {ex:'treino',val:r=>r.bpm,show:v=>v+' bpm',low:false,what:'ritmo do metrônomo',group:r=>'Módulo '+r.mod+' · nível '+r.lvl}];
 function spark(v,low){if(v.length<2)return '<svg class="spark" aria-hidden="true"></svg>';
@@ -1008,6 +1022,9 @@ function renderHist(){renderEvo();const f=$('#hs-filter').value,rows=results.fil
   $('#hs-table').innerHTML='<tr><th>Data</th><th>Exercício</th><th>Resultado</th></tr>'+(rows.length?rows.map(r=>'<tr><td class="mono">'+new Date(r.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</td><td>'+EXN[r.ex]+'</td><td>'+summary(r)+'</td></tr>').join(''):'<tr><td colspan="3">'+(f&&results.length?'Nenhuma sessão deste exercício ainda.':'Nenhum resultado ainda. Cada exercício concluído entra aqui.')+'</td></tr>');
   $('#hs-confirm').hidden=true;$('#hs-clear').hidden=!results.length}
 $('#hs-clear').onclick=()=>{$('#hs-confirm').hidden=false;$('#hs-clear').hidden=true};
+$('#plan-reset').onclick=()=>{$('#plan-reset').hidden=true;$('#plan-confirm').hidden=false};
+$('#plan-no').onclick=()=>{$('#plan-confirm').hidden=true;$('#plan-reset').hidden=false};
+$('#plan-yes').onclick=async()=>{try{await api('DELETE','/api/resultados');results=[]}catch(e){}fillSelects();renderDash()};
 $('#hs-no').onclick=renderHist;$('#hs-yes').onclick=async()=>{try{await api('DELETE','/api/resultados');results=[]}catch(e){}fillSelects();renderHist()};
 
 /* ---------- treinos: banco de palavras ----------
@@ -1140,7 +1157,7 @@ function route(){let h=location.hash.slice(1);if(!VIEWS.includes(h))h='inicio';c
   VIEWS.forEach(v=>$('#v-'+v).hidden=v!==h);
   $$('#nav a,#home').forEach(a=>a.getAttribute('href')==='#'+h||(a.id==='home'&&h==='fundamentos')?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
   if(h==='inicio')renderDash();if(h==='historico')renderHist();if(h==='teste'){fillSelects();if(pendingTest){$('#ts-text').value=pendingTest;pendingTest=null}tsReset();$('#ts-result').hidden=true}
-  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scReady();if(h==='busca')bsStart();if(h==='treino')trPick();if(h==='biblioteca'){LB.del=null;renderLib()}
+  if(h==='guia')gdLoad();if(h==='rsvp')rsLoad();if(h==='schulte')scReady();if(h==='busca')bsReady();if(h==='treino')trPick();if(h==='biblioteca'){LB.del=null;renderLib()}
   window.scrollTo(0,0)}
 document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT|BUTTON|A/.test(e.target.tagName))return;
   if(e.code==='Space'&&(cur==='rsvp'||cur==='guia')){e.preventDefault();cur==='rsvp'?rsToggle():gdToggle()}

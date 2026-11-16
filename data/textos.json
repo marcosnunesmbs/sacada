@@ -359,5 +359,125 @@
   },
   "model": "google/gemini-2.5-flash",
   "createdAt": 1794448178590
+ },
+ {
+  "id": "tmwjb1kene8a9f7",
+  "title": "Modelo Democrático Social",
+  "body": "Por volta do século XX, houve a conquista dos direitos sociais. Com esse avanço,\nconsolidou-se o acúmulo de direitos civis, políticos e sociais.\nCom o estado absolutista, prevalecia a lógica do modelo patrimonialista da administração\npública. É por isso que, historicamente, o patrimonialismo se identifica com as monarquias\nabsolutistas que prevaleciam por volta do século XVIII.\nO estado liberal e o estado liberal democrático, caracterizados pela emergência dos\ndireitos civis e políticos, assemelhavam-se ao modelo burocrático de administração. Por\nfim, com o surgimento do estado democrático social e a conquista dos direitos sociais,\nhouve a implementação do modelo gerencial, que busca transformar o estado em uma\nmáquina eficiente, capaz de entregar direitos e serviços à sociedade.\nÀ medida que o Estado evolui, os modelos teóricos também o fazem. Assim, cada vez\nque o Estado assume mais responsabilidades e amplia seu papel, a administração pública\nprecisa se adaptar e evoluir, igualmente, em seus modelos teóricos.\nPercebe-se, portanto, que os modelos de administração pública não surgem por acaso;\neles emergem de uma necessidade. Isso ocorre porque o Estado está em constante mudança,\ne com ele, as exigências da sociedade. Dessa maneira, os modelos de administração pública\nsurgem como uma resposta a essas transformações.",
+  "qs": [
+   {
+    "q": "Em qual período histórico se consolidou o acúmulo de direitos civis, políticos e sociais?",
+    "o": [
+     "Século XX",
+     "Século XXI",
+     "Século XVIII",
+     "Século XIX"
+    ],
+    "a": 0,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual modelo de administração pública prevalecia durante o estado absolutista?",
+    "o": [
+     "Modelo burocrático",
+     "Modelo gerencial",
+     "Modelo democrático",
+     "Modelo patrimonialista"
+    ],
+    "a": 3,
+    "tipo": "literal"
+   },
+   {
+    "q": "Com quais tipos de direitos o estado liberal e o estado liberal democrático são caracterizados?",
+    "o": [
+     "Direitos sociais e econômicos",
+     "Direitos culturais e ambientais",
+     "Direitos civis e políticos",
+     "Direitos humanos e coletivos"
+    ],
+    "a": 2,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual modelo de administração pública foi implementado com o surgimento do estado democrático social e a conquista dos direitos sociais?",
+    "o": [
+     "Modelo gerencial",
+     "Modelo absolutista",
+     "Modelo patrimonialista",
+     "Modelo burocrático"
+    ],
+    "a": 0,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual é o objetivo do modelo gerencial de administração pública?",
+    "o": [
+     "Manter a lógica patrimonialista",
+     "Assegurar a prevalência do estado absolutista",
+     "Limitar o papel do estado na sociedade",
+     "Transformar o estado em uma máquina eficiente para entregar direitos e serviços"
+    ],
+    "a": 3,
+    "tipo": "literal"
+   },
+   {
+    "q": "O que o texto sugere sobre a relação entre a evolução do Estado e os modelos teóricos de administração?",
+    "o": [
+     "Os modelos teóricos se adaptam e evoluem à medida que o Estado assume mais responsabilidades.",
+     "Os modelos teóricos são estáticos, independentes da evolução do Estado.",
+     "Os modelos teóricos surgem por acaso, sem relação com as mudanças do Estado.",
+     "A evolução do Estado não afeta os modelos de administração pública."
+    ],
+    "a": 0,
+    "tipo": "inferencia"
+   },
+   {
+    "q": "Qual a principal razão para o surgimento de novos modelos de administração pública?",
+    "o": [
+     "A busca por maior controle governamental.",
+     "A preferência por modelos estrangeiros.",
+     "A necessidade de manter a tradição histórica.",
+     "A constante mudança do Estado e as exigências da sociedade."
+    ],
+    "a": 3,
+    "tipo": "inferencia"
+   },
+   {
+    "q": "O que o texto indica sobre a natureza dos modelos de administração pública?",
+    "o": [
+     "Eles são independentes das exigências sociais.",
+     "Eles são imutáveis e fixos.",
+     "Eles surgem de uma necessidade e são uma resposta a transformações.",
+     "Eles são criados aleatoriamente."
+    ],
+    "a": 2,
+    "tipo": "inferencia"
+   },
+   {
+    "q": "Com qual modelo de administração pública o patrimonialismo historicamente se identifica?",
+    "o": [
+     "Monarquias absolutistas",
+     "Repúblicas democráticas",
+     "Monarquias constitucionais",
+     "Estados liberais"
+    ],
+    "a": 0,
+    "tipo": "literal"
+   },
+   {
+    "q": "Qual a relação entre o aumento das responsabilidades do Estado e a administração pública?",
+    "o": [
+     "A administração pública precisa se adaptar e evoluir em seus modelos teóricos.",
+     "A administração pública deve manter o mesmo modelo, independentemente das responsabilidades do Estado.",
+     "O aumento das responsabilidades do Estado não tem impacto na administração pública.",
+     "Quanto mais responsabilidades o Estado assume, menos a administração pública precisa se adaptar."
+    ],
+    "a": 0,
+    "tipo": "inferencia"
+   }
+  ],
+  "source": "manual",
+  "createdAt": 1794836051087,
+  "model": "google/gemini-2.5-flash"
  }
 ]
