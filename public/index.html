@@ -124,6 +124,7 @@ nav i{width:1px;height:16px;background:var(--input);margin:0 6px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--accent);vertical-align:middle;margin-right:6px}
 .legend i.e{border-top:2px dashed var(--good)}
+.legend i.m{border-top:3px solid var(--ink);opacity:.45}
 #chart{padding:4px 0 0}
 #chart svg{display:block;width:100%;height:auto}
 
@@ -370,7 +371,7 @@ body:not(.locked) #login{display:none}
     <div>
       <h2>Evolução nos testes</h2>
       <div class="panel"><div id="chart"></div></div>
-      <div class="legend"><span><i></i>velocidade (ppm)</span><span><i class="e"></i>velocidade efetiva</span></div>
+      <div class="legend"><span><i></i>velocidade (ppm)</span><span><i class="e"></i>velocidade efetiva</span><span><i class="m"></i>tendência (média dos últimos 3)</span></div>
       <p class="note">O número que importa é a velocidade efetiva. Ler a 500 ppm entendendo 40% equivale a 200 ppm.</p>
     </div>
   </div>
@@ -795,6 +796,10 @@ function renderChart(tests){
       return (pts.length>1?'<path d="M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')+'" fill="none" '+st+'/>':'')+pts.map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="var(--surface)" '+st.replace(/stroke-dasharray="[^"]*"/,'')+'/>').join('')};
     s+=line(t=>t.comp!=null?t.ppm*t.comp:null,'stroke="var(--good)" stroke-width="2" stroke-dasharray="5 4"');
     s+=line(t=>t.ppm,'stroke="var(--accent)" stroke-width="2"');
+    /* média móvel da velocidade efetiva: últimos MM testes com compreensão */
+    const MM=3,mm=[],win=[];
+    tests.forEach((t,i)=>{if(t.comp==null)return;win.push(t.ppm*t.comp);if(win.length>MM)win.shift();if(win.length===MM)mm.push([x(i),y(win.reduce((a,b)=>a+b,0)/MM)])});
+    if(mm.length>1)s+='<path d="M'+mm.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' L')+'" fill="none" stroke="var(--ink)" stroke-opacity=".45" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
     const l=tests[tests.length-1];
     s+='<text x="'+(x(tests.length-1)+8)+'" y="'+(y(l.ppm)+4)+'" fill="var(--ink)" style="font:600 12px var(--mono)">'+fmt(l.ppm)+'</text>';
     if(l.comp!=null&&Math.abs(y(l.ppm)-y(l.ppm*l.comp))>13)s+='<text x="'+(x(tests.length-1)+8)+'" y="'+(y(l.ppm*l.comp)+4)+'" fill="var(--muted)" style="font:12px var(--mono)">'+fmt(l.ppm*l.comp)+'</text>';
